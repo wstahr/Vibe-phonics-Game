@@ -1,0 +1,135 @@
+{
+  "foundation": [
+    {
+      "id": "f1",
+      "title": "The Big Cat",
+      "level": "Foundation",
+      "dateAdded": "2026-04-20",
+      "imagePrompt": "a fluffy orange tabby cat sitting on a colourful striped mat, children's book illustration style, soft watercolour, warm pastel colours, cute and friendly, simple clean background",
+      "lines": [
+        "The cat sat.",
+        "The cat sat on a mat.",
+        "The big cat sat on the mat.",
+        "I see the big cat."
+      ]
+    },
+    {
+      "id": "f2",
+      "title": "Pip the Pup",
+      "level": "Foundation",
+      "dateAdded": "2026-04-19",
+      "imagePrompt": "a tiny happy brown puppy with floppy ears running in green grass, children's book illustration, soft watercolour, warm sunny day, cute and whimsical",
+      "lines": [
+        "Pip is a pup.",
+        "Pip can run.",
+        "Pip can hop.",
+        "Pip got a hat."
+      ]
+    }
+  ],
+  "year1": [
+    {
+      "id": "y1_1",
+      "title": "The Crab and the Shell",
+      "level": "Year 1",
+      "dateAdded": "2026-04-20",
+      "imagePrompt": "a cheerful red crab holding a pink spiral seashell on a sandy beach, gentle waves, children's book illustration, soft watercolour, warm and friendly",
+      "lines": [
+        "A crab sat on the sand.",
+        "The crab had a shell.",
+        "A fish came to chat.",
+        "Then a big wave hit the shell.",
+        "The crab ran fast.",
+        "The shell was still there."
+      ]
+    },
+    {
+      "id": "y1_2",
+      "title": "The Fox and the Truck",
+      "level": "Year 1",
+      "dateAdded": "2026-04-18",
+      "imagePrompt": "a friendly orange fox driving a small red toy truck down a forest path, children's book illustration, soft watercolour, whimsical and cute",
+      "lines": [
+        "A fox had a red truck.",
+        "The fox went up a hill.",
+        "The truck was stuck in mud.",
+        "A strong ox came to help.",
+        "They got the truck out.",
+        "The fox gave the ox a fish."
+      ]
+    }
+  ],
+  "year2": [
+    {
+      "id": "y2_1",
+      "title": "The Mouse and the Cake",
+      "level": "Year 2",
+      "dateAdded": "2026-04-20",
+      "imagePrompt": "a tiny grey mouse looking at a big birthday cake with candles on a wooden table, children's book illustration, warm watercolour, cosy kitchen, whimsical",
+      "lines": [
+        "A little mouse saw a big cake.",
+        "The cake had pink icing on top.",
+        "The mouse took one tiny bite.",
+        "It was the best cake he had eaten.",
+        "He ran home to tell his friend.",
+        "They both came back for more cake.",
+        "But the cake was all gone now."
+      ]
+    },
+    {
+      "id": "y2_2",
+      "title": "Jane's Bike Ride",
+      "level": "Year 2",
+      "dateAdded": "2026-04-17",
+      "imagePrompt": "a cute rabbit riding a blue bicycle down a country lane, sunshine and green fields, children's book illustration, soft watercolour, happy and warm",
+      "lines": [
+        "Jane the rabbit had a blue bike.",
+        "She rode down the country lane.",
+        "The sun was bright and warm today.",
+        "She saw a goat in the field.",
+        "The goat waved and said hello.",
+        "Jane rode home before the rain came.",
+        "She left her bike by the green gate."
+      ]
+    }
+  ],
+  "year3": [
+    {
+      "id": "y3_1",
+      "title": "The Curious Little Otter",
+      "level": "Year 3",
+      "dateAdded": "2026-04-20",
+      "imagePrompt": "a curious playful otter exploring a sparkling river with smooth pebbles and lily pads, children's book illustration, detailed watercolour, magical woodland scene, whimsical",
+      "lines": [
+        "Oliver the otter lived beside a sparkling river.",
+        "Every morning he would explore the smooth river stones.",
+        "One day he discovered a shiny silver key underwater.",
+        "He wondered what amazing treasure the key might unlock.",
+        "His clever friend, a wise old turtle, had an idea.",
+        "Together they followed the river until they reached a cave.",
+        "Inside the cave was a small wooden chest covered in moss.",
+        "The key fit perfectly and the chest opened with a creak.",
+        "It was full of beautiful coloured pebbles collected long ago.",
+        "Oliver and the turtle laughed and shared the treasure with everyone."
+      ]
+    },
+    {
+      "id": "y3_2",
+      "title": "Bramble the Brave Badger",
+      "level": "Year 3",
+      "dateAdded": "2026-04-16",
+      "imagePrompt": "a brave little badger wearing a small red scarf walking through an enchanted forest at twilight, fireflies glowing, children's book illustration, magical watercolour, whimsical and cosy",
+      "lines": [
+        "Bramble the badger was the smallest animal in the forest.",
+        "The other creatures often teased him because of his tiny size.",
+        "One evening, a terrible storm shook the trees and scattered the birds.",
+        "A baby squirrel became trapped beneath a heavy fallen branch.",
+        "Bramble was the only one brave enough to crawl underneath.",
+        "He pushed with all his strength and freed the frightened squirrel.",
+        "The animals of the forest cheered loudly for their tiny hero.",
+        "From that day on, nobody ever teased Bramble about his size.",
+        "They learned that courage has nothing to do with being big."
+      ]
+    }
+  ]
+}
