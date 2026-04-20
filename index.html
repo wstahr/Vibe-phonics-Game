@@ -6,12 +6,16 @@ DEPLOYMENT:
 3. Go to Settings → Pages → Source: main branch / root
 4. Your app is live at: https://yourusername.github.io/repo-name
 
+FIREBASE SETUP:
+1. Go to https://console.firebase.google.com
+2. Create a new project
+3. Add a Realtime Database (start in test mode)
+4. Copy your firebaseConfig object
+5. Replace the FIREBASE_CONFIG placeholder below with your config
+
 TO ADD STORIES DAILY:
-- Open stories.json in GitHub (click the pencil/edit icon)
-- Add a new story object to the relevant year level array
-- Give it today's date in dateAdded field (format: YYYY-MM-DD)
-- Commit changes — app updates automatically within minutes
-- Stories added in the last 7 days will show a NEW badge automatically
+- Open stories.json in GitHub and add a story object with today's dateAdded
+- Stories added in the last 7 days automatically show a NEW badge
 -->
 <html lang="en">
 <head>
@@ -24,8 +28,41 @@ TO ADD STORIES DAILY:
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- ===== REPLACE THIS WITH YOUR FIREBASE CONFIG ===== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, query, orderByChild, limitToLast }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // PASTE YOUR CONFIG HERE:
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.__fbDb = db;
+    window.__fbRef = ref;
+    window.__fbPush = push;
+    window.__fbOnValue = onValue;
+    window.__fbQuery = query;
+    window.__fbOrderByChild = orderByChild;
+    window.__fbLimitToLast = limitToLast;
+    window.__fbReady = true;
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+  <!-- ===================================================== -->
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     html, body {
       height: 100%;
@@ -33,985 +70,1059 @@ TO ADD STORIES DAILY:
       color: #3a2e1f;
       background-color: #FDF6E3;
       background-image:
-        radial-gradient(circle at 20% 30%, rgba(245,197,24,0.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(26,122,110,0.06) 0%, transparent 50%),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.1 0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+        radial-gradient(circle at 20% 30%, rgba(245,197,24,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(26,122,110,0.07) 0%, transparent 50%);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
-
-    h1, h2, h3, .heading { font-family: 'Fredoka One', cursive; font-weight: 400; letter-spacing: 0.5px; }
-
+    h1, h2, h3 { font-family: 'Fredoka One', cursive; font-weight: 400; letter-spacing: 0.4px; }
     #root { min-height: 100vh; }
 
-    .app-container {
-      max-width: 760px;
+    .page {
+      max-width: 680px;
       margin: 0 auto;
-      padding: 20px 16px 40px;
+      padding: 20px 16px 60px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* ---------- Loader ---------- */
+    /* ── Loader ── */
     .loader-screen {
       position: fixed; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      background: #FDF6E3;
-      z-index: 9999; gap: 24px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #FDF6E3; z-index: 9999; gap: 20px;
     }
-    .book-bounce { font-size: 80px; animation: bookBounce 1.4s ease-in-out infinite; }
+    .book-bounce { font-size: 72px; animation: bookBounce 1.4s ease-in-out infinite; }
     @keyframes bookBounce {
-      0%, 100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
+      0%,100% { transform: translateY(0) rotate(-5deg); }
+      50%     { transform: translateY(-20px) rotate(5deg); }
     }
-    .loader-text { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: #1A7A6E; }
+    .loader-text { font-family:'Fredoka One',cursive; font-size:1.7rem; color:#1A7A6E; }
 
-    /* ---------- Buttons ---------- */
+    /* ── Buttons ── */
     .btn {
-      border: none; cursor: pointer;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      border-radius: 14px;
-      padding: 14px 22px;
-      font-size: 1rem;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      display: inline-flex; align-items: center; gap: 8px;
-      min-height: 48px;
+      border: none; cursor: pointer; font-family:'Nunito',sans-serif; font-weight:700;
+      border-radius: 14px; padding: 14px 22px; font-size: 1rem;
+      transition: transform .15s ease, box-shadow .15s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; text-align: center;
     }
-    .btn:active { transform: scale(0.96); }
-    .btn-primary { background: #1A7A6E; color: #fff; box-shadow: 0 4px 0 #0f544b; }
-    .btn-primary:hover { background: #1f8c7e; }
-    .btn-secondary { background: #F5C518; color: #3a2e1f; box-shadow: 0 4px 0 #c79c0c; }
-    .btn-ghost { background: transparent; color: #1A7A6E; font-weight: 700; padding: 10px 14px; }
-    .btn-ghost:hover { background: rgba(26,122,110,0.08); }
+    .btn:active { transform: scale(.96); }
+    .btn-primary   { background:#1A7A6E; color:#fff; box-shadow:0 4px 0 #0f544b; }
+    .btn-primary:hover { background:#1f8c7e; }
+    .btn-secondary { background:#F5C518; color:#3a2e1f; box-shadow:0 4px 0 #c79c0c; }
+    .btn-ghost     { background:transparent; color:#1A7A6E; font-weight:700; padding:10px 14px; }
+    .btn-ghost:hover { background:rgba(26,122,110,.08); }
+    .btn-full      { width:100%; }
+    .btn-sm        { padding:10px 16px; font-size:.9rem; min-height:40px; }
 
-    /* ---------- Level Select ---------- */
-    .app-title {
-      text-align: center;
-      color: #1A7A6E;
-      font-size: clamp(1.8rem, 6vw, 2.6rem);
-      margin-bottom: 6px;
-      text-shadow: 2px 3px 0 rgba(245,197,24,0.4);
+    /* ── Inputs ── */
+    .field-label { font-weight:700; font-size:.95rem; color:#5a4820; margin-bottom:6px; display:block; }
+    .text-input {
+      width:100%; padding:14px 16px; font-size:1.1rem; font-family:'Nunito',sans-serif;
+      border:2.5px solid #e8dcc0; border-radius:14px; background:#fff; color:#3a2e1f;
+      outline:none; transition:border-color .2s;
     }
-    .app-subtitle {
-      text-align: center;
-      color: #7a6549;
-      font-size: 1.05rem;
-      margin-bottom: 28px;
-    }
+    .text-input:focus { border-color:#1A7A6E; }
 
-    .level-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .level-card {
-      background: #fff;
-      border: 3px solid transparent;
-      border-radius: 22px;
-      padding: 22px 18px;
-      cursor: pointer;
-      text-align: center;
-      box-shadow: 0 6px 0 rgba(0,0,0,0.08), 0 2px 14px rgba(0,0,0,0.04);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .level-card:hover { transform: translateY(-3px); }
-    .level-card:active { transform: translateY(1px); box-shadow: 0 3px 0 rgba(0,0,0,0.08); }
-    .level-card .emoji { font-size: 3rem; display: block; margin-bottom: 8px; line-height: 1; }
-    .level-card .label {
-      font-family: 'Fredoka One', cursive;
-      font-size: 1.25rem;
-      color: #3a2e1f;
-    }
-    .level-card .count { font-size: 0.85rem; color: #7a6549; margin-top: 4px; }
-    .level-card.foundation { background: linear-gradient(135deg, #fff7d6 0%, #ffedaf 100%); }
-    .level-card.year1 { background: linear-gradient(135deg, #d6f0ea 0%, #a8e0d5 100%); }
-    .level-card.year2 { background: linear-gradient(135deg, #e0e7ff 0%, #c4cefc 100%); }
-    .level-card.year3 { background: linear-gradient(135deg, #ffe0cc 0%, #ffc29e 100%); }
-
-    /* ---------- Story Select ---------- */
+    /* ── Header row ── */
     .screen-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
+      display:flex; align-items:center; gap:8px; margin-bottom:20px;
     }
     .screen-title {
-      font-family: 'Fredoka One', cursive;
-      color: #1A7A6E;
-      font-size: 1.6rem;
-      flex: 1;
-      text-align: center;
+      font-family:'Fredoka One',cursive; color:#1A7A6E; font-size:1.55rem;
+      flex:1; text-align:center;
     }
+
+    /* ── Welcome / Profile Setup ── */
+    .welcome-hero { text-align:center; padding:8px 0 24px; }
+    .welcome-hero .title {
+      font-family:'Fredoka One',cursive; color:#1A7A6E;
+      font-size: clamp(2rem,7vw,2.8rem);
+      text-shadow:2px 3px 0 rgba(245,197,24,.4);
+      margin-bottom:6px;
+    }
+    .welcome-hero .sub { color:#7a6549; font-size:1.05rem; }
+
+    .card {
+      background:#fff; border-radius:22px; padding:22px 20px;
+      box-shadow:0 5px 0 rgba(0,0,0,.06), 0 2px 16px rgba(0,0,0,.04);
+      margin-bottom:16px;
+    }
+
+    /* ── Avatar Builder ── */
+    .avatar-stage {
+      width:160px; height:200px; margin:0 auto 20px;
+      position:relative; user-select:none;
+    }
+    .av-body-layer, .av-clothes-layer, .av-face-layer, .av-accessory-layer {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    }
+    .avatar-svg { width:100%; height:100%; }
+
+    .swatch-row {
+      display:flex; flex-wrap:wrap; gap:8px;
+      justify-content:center; margin-bottom:14px;
+    }
+    .swatch {
+      width:34px; height:34px; border-radius:50%; border:3px solid transparent;
+      cursor:pointer; transition:transform .15s, border-color .15s;
+    }
+    .swatch:hover  { transform:scale(1.15); }
+    .swatch.active { border-color:#3a2e1f; transform:scale(1.2); }
+
+    .tab-row {
+      display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; justify-content:center;
+    }
+    .tab-btn {
+      padding:7px 14px; border-radius:20px; font-family:'Nunito',sans-serif;
+      font-weight:700; font-size:.85rem; border:2px solid #e8dcc0; background:#fff;
+      cursor:pointer; color:#7a6549; transition:all .15s;
+    }
+    .tab-btn.active { background:#1A7A6E; color:#fff; border-color:#1A7A6E; }
+
+    /* ── Level select ── */
+    .level-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .level-card {
+      border:3px solid transparent; border-radius:22px; padding:22px 18px;
+      cursor:pointer; text-align:center;
+      box-shadow:0 6px 0 rgba(0,0,0,.08), 0 2px 14px rgba(0,0,0,.04);
+      transition:transform .18s ease, box-shadow .18s ease; position:relative;
+    }
+    .level-card:hover  { transform:translateY(-3px); }
+    .level-card:active { transform:translateY(1px); box-shadow:0 3px 0 rgba(0,0,0,.08); }
+    .level-card .emoji  { font-size:2.8rem; display:block; margin-bottom:8px; line-height:1; }
+    .level-card .label  { font-family:'Fredoka One',cursive; font-size:1.2rem; color:#3a2e1f; }
+    .level-card .count  { font-size:.82rem; color:#7a6549; margin-top:4px; }
+    .level-card.foundation { background:linear-gradient(135deg,#fff7d6,#ffedaf); }
+    .level-card.year1      { background:linear-gradient(135deg,#d6f0ea,#a8e0d5); }
+    .level-card.year2      { background:linear-gradient(135deg,#e0e7ff,#c4cefc); }
+    .level-card.year3      { background:linear-gradient(135deg,#ffe0cc,#ffc29e); }
+
+    /* ── Profile pill in header ── */
+    .profile-pill {
+      display:flex; align-items:center; gap:8px;
+      background:#fff; border-radius:30px; padding:6px 14px 6px 6px;
+      box-shadow:0 2px 10px rgba(0,0,0,.07); cursor:pointer;
+      transition:transform .15s;
+    }
+    .profile-pill:hover { transform:scale(1.03); }
+    .profile-pill .pname { font-weight:700; font-size:.9rem; color:#3a2e1f; }
+
+    /* ── Story list ── */
     .story-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 18px 20px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
-      display: flex; align-items: center; gap: 14px;
-      transition: transform 0.15s ease;
-      position: relative;
+      background:#fff; border-radius:18px; padding:16px 18px; margin-bottom:12px;
+      cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.06), 0 2px 12px rgba(0,0,0,.04);
+      display:flex; align-items:center; gap:14px; transition:transform .15s; position:relative;
     }
-    .story-card:active { transform: scale(0.98); }
-    .story-card .story-icon {
-      font-size: 2.2rem; flex-shrink: 0;
-      width: 56px; height: 56px;
-      display: flex; align-items: center; justify-content: center;
-      background: #FDF6E3;
-      border-radius: 14px;
+    .story-card:active { transform:scale(.98); }
+    .story-icon {
+      font-size:2rem; flex-shrink:0; width:52px; height:52px;
+      display:flex; align-items:center; justify-content:center;
+      background:#FDF6E3; border-radius:14px;
     }
-    .story-card .story-info { flex: 1; min-width: 0; }
-    .story-card .story-title {
-      font-family: 'Fredoka One', cursive;
-      font-size: 1.15rem;
-      color: #3a2e1f;
-      overflow: hidden; text-overflow: ellipsis;
+    .story-info { flex:1; min-width:0; }
+    .story-title {
+      font-family:'Fredoka One',cursive; font-size:1.1rem; color:#3a2e1f;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     }
-    .story-card .story-meta { font-size: 0.85rem; color: #7a6549; margin-top: 2px; }
-    .story-card .arrow { font-size: 1.4rem; color: #1A7A6E; }
-
+    .story-meta { font-size:.82rem; color:#7a6549; margin-top:2px; }
     .new-badge {
-      position: absolute;
-      top: -6px; right: 12px;
-      background: #E8523A;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 10px;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 6px rgba(232,82,58,0.4);
-      transform: rotate(-4deg);
+      position:absolute; top:-6px; right:12px;
+      background:#E8523A; color:#fff; font-size:.7rem; font-weight:800;
+      padding:3px 9px; border-radius:10px; letter-spacing:.5px;
+      box-shadow:0 2px 6px rgba(232,82,58,.4); transform:rotate(-4deg);
     }
-
     .add-more-btn {
-      margin-top: 20px;
-      width: 100%;
-      background: #FDF6E3;
-      border: 2px dashed #1A7A6E;
-      border-radius: 16px;
-      padding: 18px;
-      color: #1A7A6E;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
+      margin-top:16px; width:100%; background:#FDF6E3;
+      border:2px dashed #1A7A6E; border-radius:16px; padding:16px;
+      color:#1A7A6E; font-family:'Nunito',sans-serif; font-weight:700; font-size:1rem; cursor:pointer;
     }
 
-    /* ---------- Reading Screen ---------- */
-    .progress-bar-wrap {
-      height: 10px;
-      background: rgba(26,122,110,0.15);
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 16px;
+    /* ── Recent Readers ── */
+    .recent-section { margin-top:20px; }
+    .recent-title {
+      font-family:'Fredoka One',cursive; color:#1A7A6E; font-size:1.2rem; margin-bottom:12px;
     }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #1A7A6E 0%, #F5C518 100%);
-      border-radius: 6px;
-      transition: width 0.5s ease;
+    .reader-chip {
+      display:flex; align-items:center; gap:10px;
+      background:#fff; border-radius:30px; padding:8px 14px 8px 8px;
+      box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:8px;
+      animation:chipIn .3s ease;
     }
+    @keyframes chipIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .reader-chip .rname { font-weight:700; font-size:.95rem; flex:1; }
+    .reader-chip .rinfo { font-size:.8rem; color:#7a6549; }
 
-    .story-image-wrap {
-      width: 100%;
-      height: 220px;
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      position: relative;
-      background: #f5ead3;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    /* ── Reading ── */
+    .progress-wrap { height:10px; background:rgba(26,122,110,.15); border-radius:6px; overflow:hidden; margin-bottom:14px; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,#1A7A6E,#F5C518); border-radius:6px; transition:width .5s ease; }
+
+    .story-img-wrap {
+      width:100%; height:200px; border-radius:16px; overflow:hidden;
+      margin-bottom:14px; position:relative; background:#f5ead3;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
     }
-    .story-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .image-placeholder {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem;
-      background:
-        linear-gradient(90deg, rgba(253,246,227,0) 0%, rgba(255,255,255,0.7) 50%, rgba(253,246,227,0) 100%),
-        linear-gradient(135deg, #f5ead3 0%, #e8dcc0 100%);
-      background-size: 200% 100%, 100% 100%;
-      animation: shimmer 1.6s infinite;
+    .story-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+    .img-placeholder {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center; font-size:2.8rem;
+      background:linear-gradient(135deg,#f5ead3,#e8dcc0);
+      animation:shimmer 1.6s infinite;
+      background-size:200% 100%;
     }
     @keyframes shimmer {
-      0% { background-position: -100% 0, 0 0; }
-      100% { background-position: 100% 0, 0 0; }
+      0%   { background-position:-100% 0; }
+      100% { background-position:100% 0; }
     }
-    .image-error {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 5rem;
-      background: linear-gradient(135deg, #ffe8c2 0%, #ffcfa0 100%);
+    .img-error {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-size:4.5rem; background:linear-gradient(135deg,#ffe8c2,#ffcfa0);
     }
 
     .reading-title {
-      font-family: 'Fredoka One', cursive;
-      color: #1A7A6E;
-      font-size: 1.6rem;
-      text-align: center;
-      margin-bottom: 18px;
+      font-family:'Fredoka One',cursive; color:#1A7A6E; font-size:1.5rem;
+      text-align:center; margin-bottom:14px;
     }
-
-    .line-container {
-      background: #fff;
-      border-radius: 20px;
-      padding: 28px 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-      min-height: 140px;
-      display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: center;
-      gap: 10px;
+    .line-box {
+      background:#fff; border-radius:20px; padding:24px 18px; margin-bottom:14px;
+      box-shadow:0 4px 16px rgba(0,0,0,.06); min-height:120px;
+      display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;
     }
-
     .word {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 14px;
-      transition: all 0.25s ease;
-      color: #b8a885;
-      display: inline-block;
+      font-size:clamp(1.35rem,5vw,1.9rem); font-weight:700; padding:5px 12px;
+      border-radius:12px; transition:all .25s; color:#b8a885; display:inline-block;
     }
-    .word.active {
-      color: #3a2e1f;
-      background: #fff8dc;
-      box-shadow: inset 0 -4px 0 #F5C518;
-      animation: pulseActive 1.4s ease-in-out infinite;
-    }
-    @keyframes pulseActive {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-    .word.correct {
-      color: #fff;
-      background: #1A7A6E;
-      animation: correctPop 0.4s ease;
-    }
-    @keyframes correctPop {
-      0% { transform: scale(0.8); }
-      60% { transform: scale(1.18); }
-      100% { transform: scale(1); }
-    }
-    .word.incorrect {
-      color: #fff;
-      background: #E8523A;
-      animation: shake 0.45s ease;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-8px); }
-      40% { transform: translateX(8px); }
-      60% { transform: translateX(-6px); }
-      80% { transform: translateX(6px); }
-    }
-    .word.skipped {
-      color: #fff;
-      background: #b0a894;
-      text-decoration: line-through;
-    }
+    .word.active { color:#3a2e1f; background:#fff8dc; box-shadow:inset 0 -4px 0 #F5C518; animation:pulseW 1.4s ease-in-out infinite; }
+    @keyframes pulseW { 0%,100%{transform:scale(1)}50%{transform:scale(1.06)} }
+    .word.correct  { color:#fff; background:#1A7A6E; animation:correctPop .4s ease; }
+    @keyframes correctPop { 0%{transform:scale(.8)}60%{transform:scale(1.18)}100%{transform:scale(1)} }
+    .word.incorrect{ color:#fff; background:#E8523A; animation:shake .45s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)} }
+    .word.skipped  { color:#fff; background:#b0a894; text-decoration:line-through; }
 
-    .nudge-text {
-      text-align: center;
-      color: #E8523A;
-      font-weight: 700;
-      margin-bottom: 12px;
-      min-height: 24px;
-      font-size: 1rem;
-    }
+    .nudge-text { text-align:center; color:#E8523A; font-weight:700; min-height:22px; margin-bottom:10px; font-size:.95rem; }
 
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      justify-content: center;
+    .controls { display:flex; align-items:center; gap:12px; justify-content:center; }
+    .mic-btn {
+      width:86px; height:86px; border-radius:50%; background:#1A7A6E; color:#fff;
+      border:none; font-size:2.2rem; cursor:pointer;
+      box-shadow:0 6px 0 #0f544b, 0 4px 20px rgba(26,122,110,.35);
+      transition:transform .15s; display:flex; align-items:center; justify-content:center;
     }
-
-    .mic-button {
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      background: #1A7A6E;
-      color: #fff;
-      border: none;
-      font-size: 2.4rem;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #0f544b, 0 4px 20px rgba(26,122,110,0.35);
-      transition: transform 0.15s ease;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .mic-button:active { transform: scale(0.95); }
-    .mic-button.listening {
-      background: #E8523A;
-      box-shadow: 0 6px 0 #a5341f, 0 4px 20px rgba(232,82,58,0.5);
-      animation: micPulse 1.2s ease-in-out infinite;
+    .mic-btn:active { transform:scale(.95); }
+    .mic-btn.listening {
+      background:#E8523A; box-shadow:0 6px 0 #a5341f, 0 4px 20px rgba(232,82,58,.5);
+      animation:micPulse 1.2s ease-in-out infinite;
     }
     @keyframes micPulse {
-      0%, 100% { box-shadow: 0 6px 0 #a5341f, 0 0 0 0 rgba(232,82,58,0.6); }
-      50% { box-shadow: 0 6px 0 #a5341f, 0 0 0 18px rgba(232,82,58,0); }
+      0%,100%{ box-shadow:0 6px 0 #a5341f, 0 0 0 0 rgba(232,82,58,.6); }
+      50%    { box-shadow:0 6px 0 #a5341f, 0 0 0 16px rgba(232,82,58,0); }
     }
-    .mic-label { text-align: center; margin-top: 10px; color: #7a6549; font-weight: 700; }
-
+    .mic-label { text-align:center; margin-top:8px; color:#7a6549; font-weight:700; font-size:.9rem; }
     .skip-btn {
-      background: #fff;
-      color: #7a6549;
-      border: 2px solid #e0d5bc;
-      font-size: 0.9rem;
-      padding: 10px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-family: 'Nunito', sans-serif;
+      background:#fff; color:#7a6549; border:2px solid #e0d5bc;
+      font-size:.88rem; padding:10px 14px; border-radius:12px; cursor:pointer;
+      font-weight:700; font-family:'Nunito',sans-serif;
     }
 
-    /* ---------- Complete Screen ---------- */
-    .complete-wrap {
-      text-align: center;
-      padding: 40px 20px;
-    }
-    .complete-stars { font-size: 5rem; margin-bottom: 10px; animation: bigBounce 1.2s ease-in-out infinite; }
-    @keyframes bigBounce {
-      0%, 100% { transform: scale(1) rotate(-3deg); }
-      50% { transform: scale(1.1) rotate(3deg); }
-    }
-    .complete-title {
-      font-family: 'Fredoka One', cursive;
-      color: #1A7A6E;
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-    }
-    .complete-score {
-      font-size: 1.3rem;
-      color: #3a2e1f;
-      margin-bottom: 30px;
-      font-weight: 700;
-    }
-    .complete-buttons {
-      display: flex; flex-direction: column; gap: 12px; align-items: stretch;
-      max-width: 300px; margin: 0 auto;
-    }
+    /* ── Complete ── */
+    .complete-wrap { text-align:center; padding:32px 16px; }
+    .complete-stars { font-size:5rem; animation:bigBounce 1.2s ease-in-out infinite; margin-bottom:8px; }
+    @keyframes bigBounce { 0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.1) rotate(3deg)} }
+    .complete-title { font-family:'Fredoka One',cursive; color:#1A7A6E; font-size:2rem; margin-bottom:8px; }
+    .complete-score { font-size:1.2rem; color:#3a2e1f; margin-bottom:24px; font-weight:700; }
+    .complete-btns  { display:flex; flex-direction:column; gap:10px; max-width:280px; margin:0 auto; }
 
-    /* ---------- Confetti ---------- */
-    .burst-container {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 200;
-      overflow: hidden;
-    }
-    .burst-star {
-      position: absolute;
-      font-size: 2rem;
-      animation: burstFly 1.2s ease-out forwards;
-    }
-    @keyframes burstFly {
-      0% { transform: translate(0,0) scale(0.3) rotate(0deg); opacity: 1; }
-      100% { transform: var(--end-transform) scale(1.2) rotate(720deg); opacity: 0; }
-    }
+    /* ── Burst / confetti ── */
+    .burst-wrap { position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden; }
+    .burst-star { position:absolute; font-size:2rem; animation:burstFly 1.2s ease-out forwards; }
+    @keyframes burstFly { 0%{transform:translate(0,0) scale(.3) rotate(0deg);opacity:1}100%{transform:var(--et) scale(1.2) rotate(720deg);opacity:0} }
 
-    /* ---------- Banner ---------- */
+    /* ── Banners / Toast ── */
     .banner {
-      background: #fff6d0;
-      border: 2px solid #F5C518;
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      font-weight: 700;
-      color: #5a4820;
-      text-align: center;
+      background:#fff6d0; border:2px solid #F5C518; border-radius:14px;
+      padding:12px 16px; margin-bottom:14px; font-weight:700; color:#5a4820; text-align:center;
     }
-
-    /* ---------- Error ---------- */
-    .error-screen {
-      text-align: center;
-      padding: 60px 24px;
-    }
-    .error-emoji { font-size: 4rem; margin-bottom: 12px; }
-
-    /* ---------- Toast ---------- */
     .toast {
-      position: fixed;
-      bottom: 30px; left: 50%;
-      transform: translateX(-50%);
-      background: #1A7A6E;
-      color: #fff;
-      padding: 14px 22px;
-      border-radius: 30px;
-      font-weight: 700;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      z-index: 500;
-      animation: toastIn 0.3s ease;
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+      background:#1A7A6E; color:#fff; padding:12px 22px; border-radius:30px;
+      font-weight:700; box-shadow:0 6px 20px rgba(0,0,0,.2); z-index:500;
+      animation:toastIn .3s ease;
     }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translate(-50%, 20px); }
-      to { opacity: 1; transform: translate(-50%, 0); }
-    }
+    @keyframes toastIn { from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)} }
 
-    @media (max-width: 420px) {
-      .level-card .emoji { font-size: 2.4rem; }
-      .level-card .label { font-size: 1.05rem; }
-      .mic-button { width: 80px; height: 80px; font-size: 2rem; }
+    /* ── Age picker ── */
+    .age-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .age-btn {
+      padding:14px 0; font-family:'Fredoka One',cursive; font-size:1.3rem;
+      border-radius:14px; border:3px solid #e8dcc0; background:#fff;
+      cursor:pointer; color:#3a2e1f; transition:all .15s;
+    }
+    .age-btn:active { transform:scale(.93); }
+    .age-btn.selected { background:#1A7A6E; color:#fff; border-color:#1A7A6E; }
+
+    /* scrollable story list */
+    .story-list-scroll { flex:1; overflow-y:auto; padding-bottom:10px; }
+
+    @media(max-width:400px){
+      .level-card .emoji{ font-size:2.3rem; }
+      .mic-btn{ width:76px; height:76px; font-size:2rem; }
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-    // ---------- Helpers ----------
-    const stripPunct = (s) => s.toLowerCase().replace(/[^a-z0-9']/gi, '').trim();
+/* ─────────────────── helpers ─────────────────── */
+const stripPunct = s => s.toLowerCase().replace(/[^a-z0-9']/gi,'').trim();
 
-    const levenshtein = (a, b) => {
-      if (a === b) return 0;
-      if (!a.length) return b.length;
-      if (!b.length) return a.length;
-      const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
-      for (let j = 1; j <= b.length; j++) dp[0][j] = j;
-      for (let i = 1; i <= a.length; i++) {
-        for (let j = 1; j <= b.length; j++) {
-          const cost = a[i-1] === b[j-1] ? 0 : 1;
-          dp[i][j] = Math.min(
-            dp[i-1][j] + 1,
-            dp[i][j-1] + 1,
-            dp[i-1][j-1] + cost
-          );
-        }
-      }
-      return dp[a.length][b.length];
-    };
+const levenshtein = (a,b) => {
+  if(a===b) return 0; if(!a.length) return b.length; if(!b.length) return a.length;
+  const dp = Array.from({length:a.length+1},(_,i)=>[i]);
+  for(let j=1;j<=b.length;j++) dp[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++){
+    const c=a[i-1]===b[j-1]?0:1;
+    dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+c);
+  }
+  return dp[a.length][b.length];
+};
 
-    const wordsMatch = (heard, target) => {
-      const h = stripPunct(heard);
-      const t = stripPunct(target);
-      if (!h || !t) return false;
-      if (h === t) return true;
-      if (h.includes(t) || t.includes(h)) return true;
-      // Levenshtein within 1 for longer words; strict equal for very short
-      if (t.length <= 2) return h === t;
-      return levenshtein(h, t) <= 1;
-    };
+const wordsMatch = (heard,target) => {
+  const h=stripPunct(heard), t=stripPunct(target);
+  if(!h||!t) return false;
+  if(h===t||h.includes(t)||t.includes(h)) return true;
+  if(t.length<=2) return h===t;
+  return levenshtein(h,t)<=1;
+};
 
-    const tokenize = (line) => line.split(/\s+/).filter(Boolean);
+const tokenize = line => line.split(/\s+/).filter(Boolean);
 
-    const isNewStory = (dateAdded) => {
-      if (!dateAdded) return false;
-      const added = new Date(dateAdded);
-      if (isNaN(added.getTime())) return false;
-      const diffDays = (Date.now() - added.getTime()) / (1000 * 60 * 60 * 24);
-      return diffDays >= 0 && diffDays <= 7;
-    };
+const isNewStory = dateAdded => {
+  if(!dateAdded) return false;
+  const d=new Date(dateAdded); if(isNaN(d.getTime())) return false;
+  return (Date.now()-d.getTime())/(86400000) <= 7;
+};
 
-    const getStoryImageUrl = (prompt) => {
-      const encoded = encodeURIComponent(prompt);
-      return `https://image.pollinations.ai/prompt/${encoded}?width=800&height=400&nologo=true&seed=42`;
-    };
+const getImageUrl = prompt => `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=400&nologo=true&seed=42`;
 
-    const LEVEL_META = {
-      foundation: { key: 'foundation', label: 'Foundation', emoji: '🌱', klass: 'foundation' },
-      year1: { key: 'year1', label: 'Year 1', emoji: '⭐', klass: 'year1' },
-      year2: { key: 'year2', label: 'Year 2', emoji: '🚀', klass: 'year2' },
-      year3: { key: 'year3', label: 'Year 3', emoji: '🏆', klass: 'year3' },
-    };
+const fmtTime = ts => {
+  const d=new Date(ts), now=new Date();
+  const diff=Math.round((now-d)/60000);
+  if(diff<1) return 'just now';
+  if(diff<60) return `${diff}m ago`;
+  const h=Math.round(diff/60);
+  if(h<24) return `${h}h ago`;
+  return `${Math.round(h/24)}d ago`;
+};
 
-    const SpeechRecognition = typeof window !== 'undefined'
-      ? (window.SpeechRecognition || window.webkitSpeechRecognition)
-      : null;
+const LEVEL_META = {
+  foundation:{ key:'foundation', label:'Foundation', emoji:'🌱', klass:'foundation' },
+  year1:     { key:'year1',      label:'Year 1',     emoji:'⭐', klass:'year1' },
+  year2:     { key:'year2',      label:'Year 2',     emoji:'🚀', klass:'year2' },
+  year3:     { key:'year3',      label:'Year 3',     emoji:'🏆', klass:'year3' },
+};
 
-    // ---------- Loader ----------
-    const Loader = () => (
-      <div className="loader-screen">
-        <div className="book-bounce">📖</div>
-        <div className="loader-text">Loading stories...</div>
+const SpeechRecognition = typeof window!=='undefined'
+  ? (window.SpeechRecognition||window.webkitSpeechRecognition) : null;
+
+/* ─────────────────── Avatar SVG ─────────────────── */
+const SKIN_TONES  = ['#FDDBB4','#F0C27F','#D4956A','#A0522D','#5C3317'];
+const HAIR_COLS   = ['#2C1810','#8B4513','#F4C842','#D44E2E','#AAAAAA','#FF69B4','#4B0082'];
+const SHIRT_COLS  = ['#E8523A','#1A7A6E','#F5C518','#6C63FF','#FF9800','#E91E63','#2196F3','#4CAF50'];
+const PANTS_COLS  = ['#3a2e1f','#1565C0','#37474F','#6A1B9A','#BF360C','#F9A825'];
+const SHOE_COLS   = ['#3a2e1f','#E8523A','#1A7A6E','#F5C518','#FFFFFF'];
+const HAIR_STYLES = ['short','long','curly','bun','none'];
+const ACCESSORIES = ['none','hat','crown','bow','glasses'];
+
+const AvatarSVG = ({ skin, hair, hairStyle, shirt, pants, shoes, accessory, size=160 }) => {
+  const s = size;
+  const hs = hairStyle || 'short';
+  const acc = accessory || 'none';
+
+  const hairPaths = {
+    short: <rect x={s*.28} y={s*.08} width={s*.44} height={s*.16} rx={s*.05} fill={hair}/>,
+    long:  <><rect x={s*.28} y={s*.08} width={s*.44} height={s*.16} rx={s*.05} fill={hair}/><rect x={s*.24} y={s*.17} width={s*.08} height={s*.22} rx={s*.04} fill={hair}/><rect x={s*.68} y={s*.17} width={s*.08} height={s*.22} rx={s*.04} fill={hair}/></>,
+    curly: <><ellipse cx={s*.5} cy={s*.14} rx={s*.23} ry={s*.1} fill={hair}/><ellipse cx={s*.29} cy={s*.19} rx={s*.07} ry={s*.07} fill={hair}/><ellipse cx={s*.71} cy={s*.19} rx={s*.07} ry={s*.07} fill={hair}/></>,
+    bun:   <><rect x={s*.3} y={s*.1} width={s*.4} height={s*.12} rx={s*.04} fill={hair}/><circle cx={s*.5} cy={s*.08} r={s*.08} fill={hair}/></>,
+    none:  null,
+  };
+
+  const accPath = {
+    none:    null,
+    hat:     <><rect x={s*.22} y={s*.08} width={s*.56} height={s*.06} rx={s*.02} fill="#5C3317"/><rect x={s*.3} y={s*.02} width={s*.4} height={s*.1} rx={s*.04} fill="#5C3317"/></>,
+    crown:   <polygon points={`${s*.3},${s*.1} ${s*.38},${s*.02} ${s*.5},${s*.08} ${s*.62},${s*.02} ${s*.7},${s*.1}`} fill="#F5C518" stroke="#c79c0c" strokeWidth="1.5"/>,
+    bow:     <><ellipse cx={s*.38} cy={s*.07} rx={s*.07} ry={s*.04} fill="#E8523A"/><ellipse cx={s*.62} cy={s*.07} rx={s*.07} ry={s*.04} fill="#E8523A"/><circle cx={s*.5} cy={s*.07} r={s*.025} fill="#c0392b"/></>,
+    glasses: <><rect x={s*.3} y={s*.28} width={s*.14} height={s*.09} rx={s*.03} fill="none" stroke="#3a2e1f" strokeWidth="2"/><rect x={s*.56} y={s*.28} width={s*.14} height={s*.09} rx={s*.03} fill="none" stroke="#3a2e1f" strokeWidth="2"/><line x1={s*.44} y1={s*.325} x2={s*.56} y2={s*.325} stroke="#3a2e1f" strokeWidth="1.5"/></>,
+  };
+
+  return (
+    <svg viewBox={`0 0 ${s} ${s}`} width={s} height={s} xmlns="http://www.w3.org/2000/svg">
+      {/* Body */}
+      <rect x={s*.3} y={s*.48} width={s*.4} height={s*.28} rx={s*.05} fill={shirt}/>
+      {/* Arms */}
+      <rect x={s*.15} y={s*.5} width={s*.15} height={s*.22} rx={s*.05} fill={shirt}/>
+      <rect x={s*.7}  y={s*.5} width={s*.15} height={s*.22} rx={s*.05} fill={shirt}/>
+      {/* Hands */}
+      <circle cx={s*.22} cy={s*.73} r={s*.06} fill={skin}/>
+      <circle cx={s*.78} cy={s*.73} r={s*.06} fill={skin}/>
+      {/* Pants */}
+      <rect x={s*.3}  y={s*.74} width={s*.18} height={s*.18} rx={s*.04} fill={pants}/>
+      <rect x={s*.52} y={s*.74} width={s*.18} height={s*.18} rx={s*.04} fill={pants}/>
+      {/* Shoes */}
+      <ellipse cx={s*.39} cy={s*.93} rx={s*.11} ry={s*.05} fill={shoes}/>
+      <ellipse cx={s*.61} cy={s*.93} rx={s*.11} ry={s*.05} fill={shoes}/>
+      {/* Neck */}
+      <rect x={s*.44} y={s*.38} width={s*.12} height={s*.12} rx={s*.03} fill={skin}/>
+      {/* Head */}
+      <ellipse cx={s*.5} cy={s*.26} rx={s*.22} ry={s*.2} fill={skin}/>
+      {/* Hair base (back) */}
+      {hs!=='none'&&<ellipse cx={s*.5} cy={s*.2} rx={s*.22} ry={s*.12} fill={hair}/>}
+      {/* Eyes */}
+      <circle cx={s*.42} cy={s*.25} r={s*.03} fill="#2C1810"/>
+      <circle cx={s*.58} cy={s*.25} r={s*.03} fill="#2C1810"/>
+      <circle cx={s*.425} cy={s*.24} r={s*.01} fill="#fff"/>
+      <circle cx={s*.585} cy={s*.24} r={s*.01} fill="#fff"/>
+      {/* Smile */}
+      <path d={`M${s*.43},${s*.31} Q${s*.5},${s*.36} ${s*.57},${s*.31}`} fill="none" stroke="#8B4040" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* Hair details */}
+      {hairPaths[hs]}
+      {/* Accessory on top */}
+      {accPath[acc]}
+    </svg>
+  );
+};
+
+/* ─────────────────── Mini avatar (for chips/pills) ─────────────────── */
+const MiniAvatar = ({ profile, size=36 }) => {
+  if(!profile) return <span style={{fontSize:size*.6+'px'}}>😊</span>;
+  return <AvatarSVG {...profile.avatar} size={size}/>;
+};
+
+/* ─────────────────── Loader ─────────────────── */
+const Loader = () => (
+  <div className="loader-screen">
+    <div className="book-bounce">📖</div>
+    <div className="loader-text">Loading stories…</div>
+  </div>
+);
+
+/* ─────────────────── Confetti ─────────────────── */
+const Burst = ({ onDone }) => {
+  useEffect(()=>{ const t=setTimeout(onDone,1200); return()=>clearTimeout(t); },[]);
+  const stars=['⭐','🌟','✨','💫','🎉'];
+  return (
+    <div className="burst-wrap">
+      {Array.from({length:18},(_,i)=>{
+        const angle=(Math.PI*2*i)/18+Math.random()*.3;
+        const d=170+Math.random()*110;
+        return <div key={i} className="burst-star"
+          style={{left:'50%',top:'50%','--et':`translate(${Math.cos(angle)*d}px,${Math.sin(angle)*d}px)`}}>
+          {stars[i%stars.length]}
+        </div>;
+      })}
+    </div>
+  );
+};
+
+/* ─────────────────── Avatar Builder Screen ─────────────────── */
+const AvatarBuilderScreen = ({ initial, onSave, title="Build Your Avatar" }) => {
+  const def = {
+    skin:initial?.skin||SKIN_TONES[0],
+    hair:initial?.hair||HAIR_COLS[0],
+    hairStyle:initial?.hairStyle||'short',
+    shirt:initial?.shirt||SHIRT_COLS[0],
+    pants:initial?.pants||PANTS_COLS[0],
+    shoes:initial?.shoes||SHOE_COLS[0],
+    accessory:initial?.accessory||'none',
+  };
+  const [av,setAv]=useState(def);
+  const [tab,setTab]=useState('skin');
+
+  const set = k => v => setAv(prev=>({...prev,[k]:v}));
+
+  const TABS=[
+    {id:'skin',  label:'Skin'},
+    {id:'hair',  label:'Hair'},
+    {id:'style', label:'Style'},
+    {id:'shirt', label:'Top'},
+    {id:'pants', label:'Pants'},
+    {id:'shoes', label:'Shoes'},
+    {id:'acc',   label:'Extras'},
+  ];
+
+  const renderSwatches = (colors, key) => (
+    <div className="swatch-row">
+      {colors.map(c=>(
+        <div key={c} className={`swatch${av[key]===c?' active':''}`}
+          style={{background:c}} onClick={()=>set(key)(c)}/>
+      ))}
+    </div>
+  );
+
+  const renderStylePicker = (items, key, labels) => (
+    <div className="swatch-row">
+      {items.map((it,i)=>(
+        <button key={it} onClick={()=>set(key)(it)}
+          style={{
+            padding:'8px 12px', border:`2.5px solid ${av[key]===it?'#1A7A6E':'#e8dcc0'}`,
+            borderRadius:12, background:av[key]===it?'#1A7A6E':'#fff',
+            color:av[key]===it?'#fff':'#3a2e1f',
+            fontFamily:'Nunito,sans-serif', fontWeight:700, fontSize:'.85rem', cursor:'pointer'
+          }}>
+          {labels?labels[i]:it}
+        </button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="page">
+      <h2 style={{fontFamily:'Fredoka One,cursive',color:'#1A7A6E',textAlign:'center',marginBottom:16}}>{title}</h2>
+
+      <div className="avatar-stage">
+        <AvatarSVG {...av} size={160}/>
       </div>
-    );
 
-    // ---------- Confetti ----------
-    const Burst = ({ onDone }) => {
-      useEffect(() => {
-        const t = setTimeout(onDone, 1200);
-        return () => clearTimeout(t);
-      }, [onDone]);
-      const stars = ['⭐','🌟','✨','💫','🎉'];
-      const items = Array.from({ length: 18 }, (_, i) => {
-        const angle = (Math.PI * 2 * i) / 18 + Math.random() * 0.3;
-        const dist = 180 + Math.random() * 120;
-        const x = Math.cos(angle) * dist;
-        const y = Math.sin(angle) * dist;
-        return {
-          star: stars[i % stars.length],
-          style: {
-            left: '50%', top: '50%',
-            '--end-transform': `translate(${x}px, ${y}px)`,
-          },
-        };
-      });
-      return (
-        <div className="burst-container">
-          {items.map((it, i) => (
-            <div key={i} className="burst-star" style={it.style}>{it.star}</div>
-          ))}
-        </div>
-      );
-    };
-
-    // ---------- Level Select ----------
-    const LevelSelect = ({ stories, onPick }) => (
-      <div className="app-container">
-        <h1 className="app-title">📚 Magical Storybook</h1>
-        <div className="app-subtitle">Pick a level and read aloud!</div>
-        <div className="level-grid">
-          {Object.values(LEVEL_META).map(meta => {
-            const count = (stories[meta.key] || []).length;
-            return (
-              <div
-                key={meta.key}
-                className={`level-card ${meta.klass}`}
-                onClick={() => onPick(meta.key)}
-              >
-                <span className="emoji">{meta.emoji}</span>
-                <div className="label">{meta.label}</div>
-                <div className="count">{count} {count === 1 ? 'story' : 'stories'}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-
-    // ---------- Story Select ----------
-    const StorySelect = ({ levelKey, stories, onBack, onPick }) => {
-      const [toast, setToast] = useState(false);
-      const meta = LEVEL_META[levelKey];
-      const list = [...(stories[levelKey] || [])].sort((a, b) => {
-        return new Date(b.dateAdded || 0) - new Date(a.dateAdded || 0);
-      });
-
-      const showToast = () => {
-        setToast(true);
-        setTimeout(() => setToast(false), 2400);
-      };
-
-      return (
-        <div className="app-container">
-          <div className="screen-header">
-            <button className="btn btn-ghost" onClick={onBack}>← Back</button>
-            <div className="screen-title">{meta.emoji} {meta.label}</div>
-            <div style={{ width: 60 }} />
-          </div>
-          {list.length === 0 && (
-            <div className="banner">No stories yet for this level. Check back soon!</div>
-          )}
-          {list.map(story => (
-            <div key={story.id} className="story-card" onClick={() => onPick(story)}>
-              {isNewStory(story.dateAdded) && <div className="new-badge">NEW 🌟</div>}
-              <div className="story-icon">📖</div>
-              <div className="story-info">
-                <div className="story-title">{story.title}</div>
-                <div className="story-meta">{story.lines.length} lines to read</div>
-              </div>
-              <div className="arrow">›</div>
-            </div>
-          ))}
-          <button className="add-more-btn" onClick={showToast}>
-            ✨ Add More Stories
+      <div className="tab-row">
+        {TABS.map(t=>(
+          <button key={t.id} className={`tab-btn${tab===t.id?' active':''}`} onClick={()=>setTab(t.id)}>
+            {t.label}
           </button>
-          {toast && <div className="toast">New stories coming soon! Check back tomorrow 🎉</div>}
-        </div>
-      );
-    };
+        ))}
+      </div>
 
-    // ---------- Reading Screen ----------
-    const ReadingScreen = ({ story, onBack, onComplete }) => {
-      const tokenLines = story.lines.map(tokenize);
-      const totalWords = tokenLines.reduce((acc, ln) => acc + ln.length, 0);
+      <div className="card" style={{minHeight:90}}>
+        {tab==='skin'  && <>{renderSwatches(SKIN_TONES,'skin')}</>}
+        {tab==='hair'  && <>{renderSwatches(HAIR_COLS,'hair')}</>}
+        {tab==='style' && <>{renderStylePicker(HAIR_STYLES,'hairStyle',['Short','Long','Curly','Bun','None'])}</>}
+        {tab==='shirt' && <>{renderSwatches(SHIRT_COLS,'shirt')}</>}
+        {tab==='pants' && <>{renderSwatches(PANTS_COLS,'pants')}</>}
+        {tab==='shoes' && <>{renderSwatches(SHOE_COLS,'shoes')}</>}
+        {tab==='acc'   && <>{renderStylePicker(ACCESSORIES,'accessory',['None','Hat','Crown','Bow','Glasses'])}</>}
+      </div>
 
-      const [lineIndex, setLineIndex] = useState(0);
-      const [wordIndex, setWordIndex] = useState(0);
-      const [wordStates, setWordStates] = useState(() => tokenLines.map(ln => ln.map(() => 'pending')));
-      const [isListening, setIsListening] = useState(false);
-      const [imageState, setImageState] = useState('loading');
-      const [nudge, setNudge] = useState('');
-      const [showBurst, setShowBurst] = useState(false);
-      const [srSupported] = useState(!!SpeechRecognition);
+      <button className="btn btn-primary btn-full" style={{marginTop:8}} onClick={()=>onSave(av)}>
+        ✅ Save Avatar
+      </button>
+    </div>
+  );
+};
 
-      const recognitionRef = useRef(null);
-      const manualStopRef = useRef(false);
-      const stateRef = useRef({ lineIndex: 0, wordIndex: 0, tokenLines, wordStates: null });
-      stateRef.current.lineIndex = lineIndex;
-      stateRef.current.wordIndex = wordIndex;
-      stateRef.current.tokenLines = tokenLines;
-      stateRef.current.wordStates = wordStates;
-      const nudgeTimerRef = useRef(null);
-      const advanceTimerRef = useRef(null);
-      const isAdvancingRef = useRef(false);
+/* ─────────────────── Welcome / Profile Setup ─────────────────── */
+const ProfileSetup = ({ existing, onDone }) => {
+  const [step,setStep]=useState('info'); // 'info' | 'avatar'
+  const [name,setName]=useState(existing?.name||'');
+  const [age,setAge]=useState(existing?.age||null);
+  const [error,setError]=useState('');
 
-      const completedWords = wordStates.reduce(
-        (acc, ln) => acc + ln.filter(w => w === 'correct' || w === 'incorrect' || w === 'skipped').length,
-        0
-      );
-      const correctCount = wordStates.reduce(
-        (acc, ln) => acc + ln.filter(w => w === 'correct').length,
-        0
-      );
-      const progressPct = Math.round((completedWords / totalWords) * 100);
+  const handleInfoNext = () => {
+    if(!name.trim()){setError('Please enter your name!');return;}
+    if(!age){setError('Please pick your age!');return;}
+    setError('');
+    setStep('avatar');
+  };
 
-      const scheduleNudge = useCallback(() => {
-        if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
-        nudgeTimerRef.current = setTimeout(() => {
-          setNudge('Try again! You can do it 💪');
-          setTimeout(() => setNudge(''), 2000);
-        }, 3000);
-      }, []);
+  const handleAvatarSave = av => {
+    onDone({name:name.trim(), age, avatar:av});
+  };
 
-      const clearNudge = () => {
-        if (nudgeTimerRef.current) { clearTimeout(nudgeTimerRef.current); nudgeTimerRef.current = null; }
-      };
+  if(step==='avatar'){
+    return <AvatarBuilderScreen
+      initial={existing?.avatar}
+      title="Now build your character!"
+      onSave={handleAvatarSave}
+    />;
+  }
 
-      const markWord = (lIdx, wIdx, state) => {
-        setWordStates(prev => {
-          const copy = prev.map(ln => [...ln]);
-          if (copy[lIdx] && copy[lIdx][wIdx] !== undefined) copy[lIdx][wIdx] = state;
-          return copy;
-        });
-      };
+  return (
+    <div className="page">
+      <div className="welcome-hero">
+        <div className="title">📚 Magical Storybook</div>
+        <div className="sub">Let's get you set up!</div>
+      </div>
 
-      const advanceAfterLine = (lIdx) => {
-        if (isAdvancingRef.current) return;
-        isAdvancingRef.current = true;
-        setShowBurst(true);
-        advanceTimerRef.current = setTimeout(() => {
-          isAdvancingRef.current = false;
-          if (lIdx + 1 >= tokenLines.length) {
-            // Done
-            const finalCorrect = stateRef.current.wordStates.reduce(
-              (acc, ln) => acc + ln.filter(w => w === 'correct').length, 0
-            );
-            stopListening();
-            onComplete({ correct: finalCorrect, total: totalWords });
-          } else {
-            setLineIndex(lIdx + 1);
-            setWordIndex(0);
-            scheduleNudge();
-          }
-        }, 1500);
-      };
+      <div className="card">
+        <label className="field-label">What's your name? 😊</label>
+        <input
+          className="text-input"
+          placeholder="Type your name here…"
+          value={name}
+          onChange={e=>{setName(e.target.value);setError('');}}
+          maxLength={30}
+          autoComplete="off"
+        />
+      </div>
 
-      const handleTranscript = useCallback((transcript) => {
-        if (isAdvancingRef.current) return;
-        const { lineIndex: lIdx, wordIndex: wIdx, tokenLines: tL } = stateRef.current;
-        const currentLineTokens = tL[lIdx];
-        if (!currentLineTokens || wIdx >= currentLineTokens.length) return;
-        const target = currentLineTokens[wIdx];
-
-        // Take last few spoken words from transcript
-        const spokenWords = transcript.trim().split(/\s+/).filter(Boolean).slice(-4);
-        let matched = false;
-        for (let i = spokenWords.length - 1; i >= 0; i--) {
-          if (wordsMatch(spokenWords[i], target)) { matched = true; break; }
-        }
-        if (matched) {
-          clearNudge();
-          setNudge('');
-          markWord(lIdx, wIdx, 'correct');
-          const nextW = wIdx + 1;
-          if (nextW >= currentLineTokens.length) {
-            // Line complete
-            advanceAfterLine(lIdx);
-          } else {
-            setWordIndex(nextW);
-            scheduleNudge();
-          }
-        }
-      }, [scheduleNudge]);
-
-      const startListening = () => {
-        if (!srSupported) return;
-        if (recognitionRef.current) {
-          try { recognitionRef.current.stop(); } catch(e){}
-        }
-        const rec = new SpeechRecognition();
-        rec.continuous = true;
-        rec.interimResults = true;
-        rec.lang = 'en-AU';
-
-        rec.onresult = (event) => {
-          let interim = '';
-          let final = '';
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            const txt = event.results[i][0].transcript;
-            if (event.results[i].isFinal) final += ' ' + txt;
-            else interim += ' ' + txt;
-          }
-          const latest = (final + ' ' + interim).trim();
-          if (latest) handleTranscript(latest);
-        };
-
-        rec.onerror = (e) => {
-          // 'no-speech' and 'aborted' are common and harmless
-          if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-            setIsListening(false);
-            setNudge('Microphone permission needed 🎤');
-            setTimeout(() => setNudge(''), 3000);
-            manualStopRef.current = true;
-          }
-        };
-
-        rec.onend = () => {
-          // Auto-restart if we didn't stop manually and still listening
-          if (!manualStopRef.current) {
-            try { rec.start(); } catch (err) {
-              // If it fails, try once more after a tiny delay
-              setTimeout(() => { try { rec.start(); } catch(e){} }, 250);
-            }
-          }
-        };
-
-        manualStopRef.current = false;
-        recognitionRef.current = rec;
-        try {
-          rec.start();
-          setIsListening(true);
-          scheduleNudge();
-        } catch (err) {
-          setIsListening(false);
-        }
-      };
-
-      const stopListening = () => {
-        manualStopRef.current = true;
-        clearNudge();
-        if (recognitionRef.current) {
-          try { recognitionRef.current.stop(); } catch(e){}
-          recognitionRef.current = null;
-        }
-        setIsListening(false);
-      };
-
-      const toggleMic = () => {
-        if (isListening) stopListening();
-        else startListening();
-      };
-
-      const skipWord = () => {
-        const { lineIndex: lIdx, wordIndex: wIdx, tokenLines: tL } = stateRef.current;
-        const currentLineTokens = tL[lIdx];
-        if (!currentLineTokens || wIdx >= currentLineTokens.length) return;
-        clearNudge();
-        markWord(lIdx, wIdx, 'skipped');
-        const nextW = wIdx + 1;
-        if (nextW >= currentLineTokens.length) {
-          advanceAfterLine(lIdx);
-        } else {
-          setWordIndex(nextW);
-          scheduleNudge();
-        }
-      };
-
-      // Cleanup on unmount
-      useEffect(() => {
-        return () => {
-          manualStopRef.current = true;
-          if (recognitionRef.current) {
-            try { recognitionRef.current.stop(); } catch(e){}
-            recognitionRef.current = null;
-          }
-          if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
-          if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
-        };
-      }, []);
-
-      const currentLineTokens = tokenLines[lineIndex] || [];
-      const currentLineStates = wordStates[lineIndex] || [];
-
-      return (
-        <div className="app-container">
-          <div className="screen-header">
-            <button className="btn btn-ghost" onClick={() => { stopListening(); onBack(); }}>← Stories</button>
-            <div style={{ flex: 1 }} />
-          </div>
-
-          <div className="progress-bar-wrap">
-            <div className="progress-bar-fill" style={{ width: `${progressPct}%` }} />
-          </div>
-
-          <div className="story-image-wrap">
-            <img
-              src={getStoryImageUrl(story.imagePrompt)}
-              onLoad={() => setImageState('loaded')}
-              onError={() => setImageState('error')}
-              style={{ display: imageState === 'loaded' ? 'block' : 'none' }}
-              alt={story.title}
-            />
-            {imageState === 'loading' && (
-              <div className="image-placeholder">📖</div>
-            )}
-            {imageState === 'error' && (
-              <div className="image-error">🌈</div>
-            )}
-          </div>
-
-          <h2 className="reading-title">{story.title}</h2>
-
-          {!srSupported && (
-            <div className="banner">
-              Your browser doesn't support voice reading. Try Chrome or Safari! You can still use the Skip button.
-            </div>
-          )}
-
-          <div className="line-container">
-            {currentLineTokens.map((tok, i) => {
-              let cls = 'word';
-              const st = currentLineStates[i] || 'pending';
-              if (st === 'correct') cls += ' correct';
-              else if (st === 'incorrect') cls += ' incorrect';
-              else if (st === 'skipped') cls += ' skipped';
-              else if (i === wordIndex) cls += ' active';
-              return <span key={i} className={cls}>{tok}</span>;
-            })}
-          </div>
-
-          <div className="nudge-text">{nudge}</div>
-
-          <div className="controls">
-            <button className="skip-btn" onClick={skipWord}>Skip Word</button>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <button
-                className={`mic-button ${isListening ? 'listening' : ''}`}
-                onClick={toggleMic}
-                disabled={!srSupported}
-                aria-label={isListening ? 'Stop listening' : 'Start listening'}
-              >
-                {isListening ? '🛑' : '🎤'}
-              </button>
-              <div className="mic-label">{isListening ? 'Listening...' : 'Tap to read'}</div>
-            </div>
-            <div style={{ width: 70 }} />
-          </div>
-
-          {showBurst && <Burst onDone={() => setShowBurst(false)} />}
-        </div>
-      );
-    };
-
-    // ---------- Complete Screen ----------
-    const CompleteScreen = ({ score, story, onReadAgain, onHome }) => (
-      <div className="app-container">
-        <div className="complete-wrap">
-          <div className="complete-stars">🌟</div>
-          <div className="complete-title">Amazing reading!</div>
-          <div className="complete-score">
-            You read {score.correct} out of {score.total} words correctly! 🎉
-          </div>
-          <div className="complete-buttons">
-            <button className="btn btn-primary" onClick={onReadAgain}>🔁 Read Again</button>
-            <button className="btn btn-secondary" onClick={onHome}>📚 Choose Another Story</button>
-          </div>
+      <div className="card">
+        <label className="field-label">How old are you? 🎂</label>
+        <div className="age-grid">
+          {[4,5,6,7,8,9,10,11].map(n=>(
+            <button key={n} className={`age-btn${age===n?' selected':''}`} onClick={()=>{setAge(n);setError('');}}>
+              {n}
+            </button>
+          ))}
         </div>
       </div>
-    );
 
-    // ---------- App ----------
-    const App = () => {
-      const [stories, setStories] = useState(null);
-      const [loadError, setLoadError] = useState(false);
-      const [screen, setScreen] = useState('loading'); // 'loading'|'level-select'|'story-select'|'reading'|'complete'
-      const [selectedLevel, setSelectedLevel] = useState(null);
-      const [selectedStory, setSelectedStory] = useState(null);
-      const [finalScore, setFinalScore] = useState(null);
-      const [readingKey, setReadingKey] = useState(0); // force remount on read again
+      {error && <div style={{color:'#E8523A',fontWeight:700,textAlign:'center',marginBottom:10}}>{error}</div>}
 
-      const loadStories = useCallback(() => {
-        setLoadError(false);
-        setScreen('loading');
-        fetch('./stories.json', { cache: 'no-store' })
-          .then(r => {
-            if (!r.ok) throw new Error('Bad status');
-            return r.json();
-          })
-          .then(data => {
-            // Ensure shape
-            const normalised = {
-              foundation: data.foundation || [],
-              year1: data.year1 || [],
-              year2: data.year2 || [],
-              year3: data.year3 || [],
-            };
-            setStories(normalised);
-            setScreen('level-select');
-          })
-          .catch(() => {
-            setLoadError(true);
-          });
-      }, []);
+      <button className="btn btn-primary btn-full" onClick={handleInfoNext}>
+        Next: Build My Character →
+      </button>
+    </div>
+  );
+};
 
-      useEffect(() => { loadStories(); }, [loadStories]);
+/* ─────────────────── Recent Readers Widget ─────────────────── */
+const RecentReaders = () => {
+  const [readers,setReaders]=useState([]);
+  const [ready,setReady]=useState(false);
 
-      if (loadError) {
+  useEffect(()=>{
+    const connect = () => {
+      if(!window.__fbReady||!window.__fbDb) return;
+      setReady(true);
+      try {
+        const q = window.__fbQuery(
+          window.__fbRef(window.__fbDb,'recentReaders'),
+          window.__fbOrderByChild('timestamp'),
+          window.__fbLimitToLast(10)
+        );
+        window.__fbOnValue(q, snap=>{
+          const data=snap.val();
+          if(!data) return;
+          const list=Object.values(data)
+            .sort((a,b)=>b.timestamp-a.timestamp)
+            .slice(0,8);
+          setReaders(list);
+        });
+      } catch(e){ /* Firebase not configured yet */ }
+    };
+    if(window.__fbReady) connect();
+    else window.addEventListener('firebase-ready',connect);
+    return()=>window.removeEventListener('firebase-ready',connect);
+  },[]);
+
+  if(!ready||readers.length===0) return null;
+
+  return (
+    <div className="recent-section">
+      <div className="recent-title">📖 Recent Readers</div>
+      {readers.map((r,i)=>(
+        <div key={i} className="reader-chip">
+          <div style={{flexShrink:0,width:36,height:36,overflow:'hidden',borderRadius:'50%',background:'#f5ead3',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            {r.avatar ? <AvatarSVG {...r.avatar} size={36}/> : <span style={{fontSize:20}}>😊</span>}
+          </div>
+          <div className="rname">{r.name}</div>
+          <div className="rinfo">{LEVEL_META[r.levelKey]?.emoji} {r.levelLabel} · {fmtTime(r.timestamp)}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const postRecentReader = (profile, levelKey, levelLabel) => {
+  if(!window.__fbReady||!window.__fbDb) return;
+  try {
+    window.__fbPush(window.__fbRef(window.__fbDb,'recentReaders'),{
+      name: profile.name,
+      age: profile.age,
+      avatar: profile.avatar||null,
+      levelKey,
+      levelLabel,
+      timestamp: Date.now(),
+    });
+  } catch(e){}
+};
+
+/* ─────────────────── Level Select ─────────────────── */
+const LevelSelect = ({ stories, profile, onPick, onEditProfile }) => (
+  <div className="page">
+    <div className="screen-header">
+      <div style={{flex:1}}/>
+      <h1 style={{fontFamily:'Fredoka One,cursive',color:'#1A7A6E',fontSize:'1.5rem',textAlign:'center',flex:2,
+        textShadow:'2px 3px 0 rgba(245,197,24,.4)'}}>📚 Storybook</h1>
+      <div style={{flex:1,display:'flex',justifyContent:'flex-end'}}>
+        <div className="profile-pill" onClick={onEditProfile}>
+          <MiniAvatar profile={profile} size={34}/>
+          <span className="pname">{profile.name}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style={{textAlign:'center',marginBottom:20,color:'#7a6549',fontWeight:700}}>
+      Hello, {profile.name}! 👋 Pick a level to read.
+    </div>
+
+    <div className="level-grid">
+      {Object.values(LEVEL_META).map(meta=>{
+        const count=(stories[meta.key]||[]).length;
         return (
-          <div className="app-container">
-            <div className="error-screen">
-              <div className="error-emoji">😕</div>
-              <h2 style={{ color: '#1A7A6E', marginBottom: 10 }}>Couldn't load stories</h2>
-              <p style={{ marginBottom: 24, color: '#7a6549' }}>Check your connection and try again!</p>
-              <button className="btn btn-primary" onClick={loadStories}>🔄 Retry</button>
-            </div>
+          <div key={meta.key} className={`level-card ${meta.klass}`} onClick={()=>onPick(meta.key)}>
+            <span className="emoji">{meta.emoji}</span>
+            <div className="label">{meta.label}</div>
+            <div className="count">{count} {count===1?'story':'stories'}</div>
           </div>
         );
+      })}
+    </div>
+
+    <RecentReaders/>
+  </div>
+);
+
+/* ─────────────────── Story Select ─────────────────── */
+const StorySelect = ({ levelKey, stories, profile, onBack, onPick }) => {
+  const [toast,setToast]=useState(false);
+  const meta=LEVEL_META[levelKey];
+  const list=[...(stories[levelKey]||[])].sort((a,b)=>new Date(b.dateAdded||0)-new Date(a.dateAdded||0));
+  const showToast=()=>{ setToast(true); setTimeout(()=>setToast(false),2400); };
+
+  return (
+    <div className="page">
+      <div className="screen-header">
+        <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
+        <div className="screen-title">{meta.emoji} {meta.label}</div>
+        <MiniAvatar profile={profile} size={34}/>
+      </div>
+
+      <div className="story-list-scroll">
+        {list.length===0&&<div className="banner">No stories yet — check back soon!</div>}
+        {list.map(story=>(
+          <div key={story.id} className="story-card" onClick={()=>onPick(story)}>
+            {isNewStory(story.dateAdded)&&<div className="new-badge">NEW 🌟</div>}
+            <div className="story-icon">📖</div>
+            <div className="story-info">
+              <div className="story-title">{story.title}</div>
+              <div className="story-meta">{story.lines.length} lines to read</div>
+            </div>
+            <span style={{color:'#1A7A6E',fontSize:'1.3rem'}}>›</span>
+          </div>
+        ))}
+        <button className="add-more-btn" onClick={showToast}>✨ Add More Stories</button>
+      </div>
+      {toast&&<div className="toast">New stories coming soon! Check back tomorrow 🎉</div>}
+    </div>
+  );
+};
+
+/* ─────────────────── Reading Screen ─────────────────── */
+const ReadingScreen = ({ story, profile, onBack, onComplete }) => {
+  const tokenLines=story.lines.map(tokenize);
+  const totalWords=tokenLines.reduce((a,l)=>a+l.length,0);
+
+  const [lineIndex,setLineIndex]=useState(0);
+  const [wordIndex,setWordIndex]=useState(0);
+  const [wordStates,setWordStates]=useState(()=>tokenLines.map(l=>l.map(()=>'pending')));
+  const [isListening,setIsListening]=useState(false);
+  const [imageState,setImageState]=useState('loading');
+  const [nudge,setNudge]=useState('');
+  const [showBurst,setShowBurst]=useState(false);
+  const [srSupported]=useState(!!SpeechRecognition);
+
+  const recRef=useRef(null);
+  const manualStopRef=useRef(false);
+  const stateRef=useRef({lineIndex:0,wordIndex:0,tokenLines,wordStates:null});
+  stateRef.current.lineIndex=lineIndex;
+  stateRef.current.wordIndex=wordIndex;
+  stateRef.current.tokenLines=tokenLines;
+  stateRef.current.wordStates=wordStates;
+  const nudgeTimer=useRef(null);
+  const advTimer=useRef(null);
+  const advancing=useRef(false);
+
+  const correctCount=wordStates.reduce((a,l)=>a+l.filter(w=>w==='correct').length,0);
+  const completedWords=wordStates.reduce((a,l)=>a+l.filter(w=>w!=='pending').length,0);
+  const pct=Math.round((completedWords/totalWords)*100);
+
+  const scheduleNudge=useCallback(()=>{
+    if(nudgeTimer.current) clearTimeout(nudgeTimer.current);
+    nudgeTimer.current=setTimeout(()=>{
+      setNudge('Try again! You can do it 💪');
+      setTimeout(()=>setNudge(''),2000);
+    },3000);
+  },[]);
+
+  const clearNudge=()=>{ if(nudgeTimer.current){clearTimeout(nudgeTimer.current);nudgeTimer.current=null;} };
+
+  const markWord=(lIdx,wIdx,state)=>{
+    setWordStates(prev=>{ const c=prev.map(l=>[...l]); if(c[lIdx]&&c[lIdx][wIdx]!==undefined) c[lIdx][wIdx]=state; return c; });
+  };
+
+  const advanceAfterLine=lIdx=>{
+    if(advancing.current) return;
+    advancing.current=true;
+    setShowBurst(true);
+    advTimer.current=setTimeout(()=>{
+      advancing.current=false;
+      if(lIdx+1>=tokenLines.length){
+        const fc=stateRef.current.wordStates.reduce((a,l)=>a+l.filter(w=>w==='correct').length,0);
+        stopListening();
+        onComplete({correct:fc,total:totalWords});
+      } else {
+        setLineIndex(lIdx+1); setWordIndex(0); scheduleNudge();
       }
+    },1500);
+  };
 
-      if (screen === 'loading' || !stories) return <Loader />;
+  const handleTranscript=useCallback(transcript=>{
+    if(advancing.current) return;
+    const {lineIndex:li,wordIndex:wi,tokenLines:tL}=stateRef.current;
+    const tokens=tL[li]; if(!tokens||wi>=tokens.length) return;
+    const target=tokens[wi];
+    const spoken=transcript.trim().split(/\s+/).filter(Boolean).slice(-4);
+    let matched=false;
+    for(let i=spoken.length-1;i>=0;i--) if(wordsMatch(spoken[i],target)){matched=true;break;}
+    if(matched){
+      clearNudge(); setNudge('');
+      markWord(li,wi,'correct');
+      const next=wi+1;
+      if(next>=tokens.length) advanceAfterLine(li);
+      else { setWordIndex(next); scheduleNudge(); }
+    }
+  },[scheduleNudge]);
 
-      if (screen === 'level-select') {
-        return <LevelSelect stories={stories} onPick={(lvl) => { setSelectedLevel(lvl); setScreen('story-select'); }} />;
+  const startListening=()=>{
+    if(!srSupported) return;
+    if(recRef.current) try{recRef.current.stop();}catch(e){}
+    const rec=new SpeechRecognition();
+    rec.continuous=true; rec.interimResults=true; rec.lang='en-AU';
+    rec.onresult=e=>{
+      let fi='',ii='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal) fi+=' '+t; else ii+=' '+t;
       }
-
-      if (screen === 'story-select') {
-        return (
-          <StorySelect
-            levelKey={selectedLevel}
-            stories={stories}
-            onBack={() => setScreen('level-select')}
-            onPick={(story) => {
-              setSelectedStory(story);
-              setReadingKey(k => k + 1);
-              setScreen('reading');
-            }}
-          />
-        );
-      }
-
-      if (screen === 'reading') {
-        return (
-          <ReadingScreen
-            key={readingKey}
-            story={selectedStory}
-            onBack={() => setScreen('story-select')}
-            onComplete={(score) => { setFinalScore(score); setScreen('complete'); }}
-          />
-        );
-      }
-
-      if (screen === 'complete') {
-        return (
-          <CompleteScreen
-            score={finalScore}
-            story={selectedStory}
-            onReadAgain={() => { setReadingKey(k => k + 1); setScreen('reading'); }}
-            onHome={() => setScreen('story-select')}
-          />
-        );
-      }
-
-      return <Loader />;
+      const lat=(fi+' '+ii).trim(); if(lat) handleTranscript(lat);
     };
+    rec.onerror=e=>{
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){
+        setIsListening(false); setNudge('Microphone permission needed 🎤');
+        setTimeout(()=>setNudge(''),3000); manualStopRef.current=true;
+      }
+    };
+    rec.onend=()=>{ if(!manualStopRef.current) try{rec.start();}catch(e){setTimeout(()=>{try{rec.start();}catch(e){}},250);} };
+    manualStopRef.current=false; recRef.current=rec;
+    try{ rec.start(); setIsListening(true); scheduleNudge(); }
+    catch(e){ setIsListening(false); }
+  };
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+  const stopListening=()=>{
+    manualStopRef.current=true; clearNudge();
+    if(recRef.current){ try{recRef.current.stop();}catch(e){} recRef.current=null; }
+    setIsListening(false);
+  };
+
+  const skipWord=()=>{
+    const {lineIndex:li,wordIndex:wi,tokenLines:tL}=stateRef.current;
+    const tokens=tL[li]; if(!tokens||wi>=tokens.length) return;
+    clearNudge(); markWord(li,wi,'skipped');
+    const next=wi+1;
+    if(next>=tokens.length) advanceAfterLine(li);
+    else { setWordIndex(next); scheduleNudge(); }
+  };
+
+  useEffect(()=>()=>{
+    manualStopRef.current=true;
+    if(recRef.current) try{recRef.current.stop();}catch(e){}
+    if(nudgeTimer.current) clearTimeout(nudgeTimer.current);
+    if(advTimer.current) clearTimeout(advTimer.current);
+  },[]);
+
+  const curTokens=tokenLines[lineIndex]||[];
+  const curStates=wordStates[lineIndex]||[];
+
+  return (
+    <div className="page">
+      <div className="screen-header">
+        <button className="btn btn-ghost btn-sm" onClick={()=>{stopListening();onBack();}}>← Stories</button>
+        <MiniAvatar profile={profile} size={34}/>
+      </div>
+
+      <div className="progress-wrap">
+        <div className="progress-fill" style={{width:`${pct}%`}}/>
+      </div>
+
+      <div className="story-img-wrap">
+        <img src={getImageUrl(story.imagePrompt)}
+          onLoad={()=>setImageState('loaded')} onError={()=>setImageState('error')}
+          style={{display:imageState==='loaded'?'block':'none'}} alt={story.title}/>
+        {imageState==='loading'&&<div className="img-placeholder">📖</div>}
+        {imageState==='error'&&<div className="img-error">🌈</div>}
+      </div>
+
+      <h2 className="reading-title">{story.title}</h2>
+
+      {!srSupported&&<div className="banner">Your browser doesn't support voice reading — try Chrome or Safari! Use the Skip button to keep going.</div>}
+
+      <div className="line-box">
+        {curTokens.map((tok,i)=>{
+          const st=curStates[i]||'pending';
+          let cls='word';
+          if(st==='correct') cls+=' correct';
+          else if(st==='incorrect') cls+=' incorrect';
+          else if(st==='skipped') cls+=' skipped';
+          else if(i===wordIndex) cls+=' active';
+          return <span key={i} className={cls}>{tok}</span>;
+        })}
+      </div>
+
+      <div className="nudge-text">{nudge}</div>
+
+      <div className="controls">
+        <button className="skip-btn" onClick={skipWord}>Skip Word</button>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+          <button className={`mic-btn${isListening?' listening':''}`} onClick={()=>isListening?stopListening():startListening()}
+            disabled={!srSupported} aria-label={isListening?'Stop':'Start'}>
+            {isListening?'🛑':'🎤'}
+          </button>
+          <div className="mic-label">{isListening?'Listening…':'Tap to read'}</div>
+        </div>
+        <div style={{width:70}}/>
+      </div>
+
+      {showBurst&&<Burst onDone={()=>setShowBurst(false)}/>}
+    </div>
+  );
+};
+
+/* ─────────────────── Complete Screen ─────────────────── */
+const CompleteScreen = ({ score, profile, levelKey, levelLabel, onReadAgain, onHome }) => {
+  const [posted,setPosted]=useState(false);
+  useEffect(()=>{
+    if(!posted){ postRecentReader(profile,levelKey,levelLabel); setPosted(true); }
+  },[]);
+
+  return (
+    <div className="page">
+      <div className="complete-wrap">
+        <div className="complete-stars">🌟</div>
+        <div className="complete-title">Amazing, {profile.name}!</div>
+        <div className="complete-score">
+          You read {score.correct} out of {score.total} words correctly! 🎉
+        </div>
+        <div style={{marginBottom:20}}>
+          <AvatarSVG {...profile.avatar} size={100}/>
+        </div>
+        <div className="complete-btns">
+          <button className="btn btn-primary btn-full" onClick={onReadAgain}>🔁 Read Again</button>
+          <button className="btn btn-secondary btn-full" onClick={onHome}>📚 Choose Another Story</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────── App ─────────────────── */
+const App = () => {
+  const [stories,setStories]=useState(null);
+  const [loadError,setLoadError]=useState(false);
+  const [screen,setScreen]=useState('loading');
+  // 'loading'|'profile'|'avatar-edit'|'level-select'|'story-select'|'reading'|'complete'
+  const [profile,setProfile]=useState(()=>{
+    try{ const s=localStorage.getItem('msb_profile'); return s?JSON.parse(s):null; }
+    catch(e){ return null; }
+  });
+  const [selectedLevel,setSelectedLevel]=useState(null);
+  const [selectedStory,setSelectedStory]=useState(null);
+  const [finalScore,setFinalScore]=useState(null);
+  const [readingKey,setReadingKey]=useState(0);
+
+  const saveProfile = p => {
+    setProfile(p);
+    try{ localStorage.setItem('msb_profile',JSON.stringify(p)); }catch(e){}
+  };
+
+  const loadStories = useCallback(()=>{
+    setLoadError(false); setScreen('loading');
+    fetch('./stories.json',{cache:'no-store'})
+      .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+      .then(data=>{
+        setStories({
+          foundation:data.foundation||[],
+          year1:data.year1||[],
+          year2:data.year2||[],
+          year3:data.year3||[],
+        });
+        setScreen(profile?'level-select':'profile');
+      })
+      .catch(()=>setLoadError(true));
+  },[profile]);
+
+  useEffect(()=>{ loadStories(); },[]);
+
+  if(loadError) return (
+    <div className="page" style={{alignItems:'center',justifyContent:'center'}}>
+      <div style={{textAlign:'center',padding:'40px 24px'}}>
+        <div style={{fontSize:'3.5rem',marginBottom:12}}>😕</div>
+        <h2 style={{color:'#1A7A6E',marginBottom:10}}>Couldn't load stories</h2>
+        <p style={{marginBottom:24,color:'#7a6549'}}>Check your connection and try again!</p>
+        <button className="btn btn-primary" onClick={loadStories}>🔄 Retry</button>
+      </div>
+    </div>
+  );
+
+  if(screen==='loading'||!stories) return <Loader/>;
+
+  if(screen==='profile') return (
+    <ProfileSetup existing={profile} onDone={p=>{ saveProfile(p); setScreen('level-select'); }}/>
+  );
+
+  if(screen==='avatar-edit') return (
+    <AvatarBuilderScreen
+      initial={profile?.avatar}
+      title="Edit Your Character"
+      onSave={av=>{ saveProfile({...profile,avatar:av}); setScreen('level-select'); }}
+    />
+  );
+
+  if(!profile) return <ProfileSetup onDone={p=>{ saveProfile(p); setScreen('level-select'); }}/>;
+
+  if(screen==='level-select') return (
+    <LevelSelect
+      stories={stories} profile={profile}
+      onPick={lvl=>{ setSelectedLevel(lvl); setScreen('story-select'); }}
+      onEditProfile={()=>setScreen('avatar-edit')}
+    />
+  );
+
+  if(screen==='story-select') return (
+    <StorySelect
+      levelKey={selectedLevel} stories={stories} profile={profile}
+      onBack={()=>setScreen('level-select')}
+      onPick={story=>{ setSelectedStory(story); setReadingKey(k=>k+1); setScreen('reading'); }}
+    />
+  );
+
+  if(screen==='reading') return (
+    <ReadingScreen
+      key={readingKey} story={selectedStory} profile={profile}
+      onBack={()=>setScreen('story-select')}
+      onComplete={score=>{ setFinalScore(score); setScreen('complete'); }}
+    />
+  );
+
+  if(screen==='complete') return (
+    <CompleteScreen
+      score={finalScore} profile={profile}
+      levelKey={selectedLevel}
+      levelLabel={LEVEL_META[selectedLevel]?.label||''}
+      onReadAgain={()=>{ setReadingKey(k=>k+1); setScreen('reading'); }}
+      onHome={()=>setScreen('story-select')}
+    />
+  );
+
+  return <Loader/>;
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
 </body>
 </html>

@@ -5,7 +5,7 @@
       "title": "The Big Cat",
       "level": "Foundation",
       "dateAdded": "2026-04-20",
-      "imagePrompt": "a fluffy orange tabby cat sitting on a colourful striped mat, children's book illustration style, soft watercolour, warm pastel colours, cute and friendly, simple clean background",
+      "imagePrompt": "a fluffy orange tabby cat sitting on a colourful striped mat, children's book illustration, soft watercolour, warm pastel colours, cute and friendly",
       "lines": [
         "The cat sat.",
         "The cat sat on a mat.",
@@ -25,6 +25,110 @@
         "Pip can hop.",
         "Pip got a hat."
       ]
+    },
+    {
+      "id": "f3",
+      "title": "The Red Hen",
+      "level": "Foundation",
+      "dateAdded": "2026-04-18",
+      "imagePrompt": "a plump cheerful red hen sitting in a nest on a farm, soft watercolour children's book illustration, warm earthy tones, sunny barn background",
+      "lines": [
+        "The hen sat in a net.",
+        "The hen is red.",
+        "The red hen got an egg.",
+        "The egg is big."
+      ]
+    },
+    {
+      "id": "f4",
+      "title": "Dot the Dog",
+      "level": "Foundation",
+      "dateAdded": "2026-04-17",
+      "imagePrompt": "an adorable spotty dalmatian puppy sitting on a red rug, children's book watercolour illustration, soft warm colours, friendly expression",
+      "lines": [
+        "Dot is a dog.",
+        "Dot has a bed.",
+        "Dot sat on the bed.",
+        "Dot dug in the mud."
+      ]
+    },
+    {
+      "id": "f5",
+      "title": "Gus the Bug",
+      "level": "Foundation",
+      "dateAdded": "2026-04-16",
+      "imagePrompt": "a cute cartoon ladybug with big eyes sitting on a green leaf, soft watercolour children's book style, bright cheerful colours, friendly",
+      "lines": [
+        "Gus is a bug.",
+        "Gus sat on a log.",
+        "The log was wet.",
+        "Gus ran to a jug."
+      ]
+    },
+    {
+      "id": "f6",
+      "title": "The Fat Cat",
+      "level": "Foundation",
+      "dateAdded": "2026-04-15",
+      "imagePrompt": "a round chubby orange cat sitting on a colourful hat, watercolour children's illustration, warm yellows and oranges, funny and cute",
+      "lines": [
+        "The cat is fat.",
+        "The fat cat sat.",
+        "The fat cat has a hat.",
+        "The hat is on the mat."
+      ]
+    },
+    {
+      "id": "f7",
+      "title": "Rip the Rat",
+      "level": "Foundation",
+      "dateAdded": "2026-04-14",
+      "imagePrompt": "a tiny grey rat with a red hat sitting next to a big piece of cheese, soft watercolour illustration, children's book style, warm kitchen background",
+      "lines": [
+        "Rip is a rat.",
+        "Rip got a bit of ham.",
+        "Rip hid in a tin.",
+        "Rip ran and ran."
+      ]
+    },
+    {
+      "id": "f8",
+      "title": "Ben the Hen",
+      "level": "Foundation",
+      "dateAdded": "2026-04-13",
+      "imagePrompt": "a friendly brown hen pecking at grain in a sunny green paddock, children's watercolour illustration, soft earthy tones, farm scene, cute",
+      "lines": [
+        "Ben is a big hen.",
+        "Ben can peck.",
+        "Ben got a bit of fed.",
+        "Ben sat in the sun."
+      ]
+    },
+    {
+      "id": "f9",
+      "title": "The Fox and the Box",
+      "level": "Foundation",
+      "dateAdded": "2026-04-12",
+      "imagePrompt": "a small orange fox peeking into a wooden box in a forest, watercolour children's illustration, warm forest colours, curious and cute expression",
+      "lines": [
+        "The fox has a box.",
+        "The box is big.",
+        "The fox hid in the box.",
+        "The fox got a hug."
+      ]
+    },
+    {
+      "id": "f10",
+      "title": "Sun and Fun",
+      "level": "Foundation",
+      "dateAdded": "2026-04-11",
+      "imagePrompt": "two cute bear cubs playing and splashing in a muddy puddle under bright sunshine, soft watercolour children's illustration, cheerful bright colours",
+      "lines": [
+        "The sun is up.",
+        "We can run and jump.",
+        "We hop in the mud.",
+        "We had so much fun."
+      ]
     }
   ],
   "year1": [
@@ -33,7 +137,7 @@
       "title": "The Crab and the Shell",
       "level": "Year 1",
       "dateAdded": "2026-04-20",
-      "imagePrompt": "a cheerful red crab holding a pink spiral seashell on a sandy beach, gentle waves, children's book illustration, soft watercolour, warm and friendly",
+      "imagePrompt": "a cheerful red crab holding a pink spiral seashell on a sandy beach, gentle waves, children's book illustration, soft watercolour",
       "lines": [
         "A crab sat on the sand.",
         "The crab had a shell.",
@@ -47,7 +151,7 @@
       "id": "y1_2",
       "title": "The Fox and the Truck",
       "level": "Year 1",
-      "dateAdded": "2026-04-18",
+      "dateAdded": "2026-04-19",
       "imagePrompt": "a friendly orange fox driving a small red toy truck down a forest path, children's book illustration, soft watercolour, whimsical and cute",
       "lines": [
         "A fox had a red truck.",
@@ -57,6 +161,126 @@
         "They got the truck out.",
         "The fox gave the ox a fish."
       ]
+    },
+    {
+      "id": "y1_3",
+      "title": "Chip the Chick",
+      "level": "Year 1",
+      "dateAdded": "2026-04-18",
+      "imagePrompt": "a fluffy yellow baby chick wearing a tiny chef hat in a sunny farmyard, children's watercolour illustration, warm cheerful colours",
+      "lines": [
+        "Chip the chick had a wish.",
+        "She wished she could fly.",
+        "She ran and then she leapt.",
+        "But she just sat in the shed.",
+        "A kind thrush came to help.",
+        "They both had a chat on a branch."
+      ]
+    },
+    {
+      "id": "y1_4",
+      "title": "The Ship in the Storm",
+      "level": "Year 1",
+      "dateAdded": "2026-04-17",
+      "imagePrompt": "a tiny toy wooden ship on big blue waves during a stormy sea, children's watercolour book illustration, dramatic but friendly, whimsical",
+      "lines": [
+        "A ship set off in the wind.",
+        "The fish swam next to the ship.",
+        "Then the storm began to crash.",
+        "The ship shook on the thick waves.",
+        "A strong shark pushed it to shore.",
+        "The ship and fish were safe at last."
+      ]
+    },
+    {
+      "id": "y1_5",
+      "title": "Frog and the Drum",
+      "level": "Year 1",
+      "dateAdded": "2026-04-16",
+      "imagePrompt": "a jolly green frog playing a big red drum beside a lily pond, children's watercolour illustration, bright greens and blues, musical and fun",
+      "lines": [
+        "A frog sat by the pond.",
+        "He had a big drum to thump.",
+        "He hit it once and then again.",
+        "The dragonfly woke with a start.",
+        "A thrush flew down to listen.",
+        "They all sang the best song."
+      ]
+    },
+    {
+      "id": "y1_6",
+      "title": "The Snail Trail",
+      "level": "Year 1",
+      "dateAdded": "2026-04-15",
+      "imagePrompt": "a tiny snail with a shiny spiral shell leaving a glistening trail through green grass and flowers, soft watercolour children's illustration",
+      "lines": [
+        "A snail set off down the track.",
+        "His shell was shiny and bright.",
+        "He left a thin trail on the path.",
+        "A crab stopped to say hello.",
+        "Then a frog hopped across.",
+        "The snail kept going with a grin."
+      ]
+    },
+    {
+      "id": "y1_7",
+      "title": "Spot and the Brush",
+      "level": "Year 1",
+      "dateAdded": "2026-04-14",
+      "imagePrompt": "a spotty puppy holding a paintbrush in its mouth next to a colourful painting on a wall, watercolour children's illustration, playful and cheerful",
+      "lines": [
+        "Spot the dog had a big brush.",
+        "He dipped it in the red pot.",
+        "Then he brushed it on the shed.",
+        "The shed had stripes and spots.",
+        "His friend the thrush clapped her wings.",
+        "Spot grinned and brushed some more."
+      ]
+    },
+    {
+      "id": "y1_8",
+      "title": "The Brave Crab",
+      "level": "Year 1",
+      "dateAdded": "2026-04-13",
+      "imagePrompt": "a brave little blue crab standing on a rock with claws raised, dramatic ocean backdrop, children's watercolour illustration, bold colours",
+      "lines": [
+        "Brad the crab had a plan.",
+        "He would cross the big rocks.",
+        "He crept through the chill wind.",
+        "A thick shell blocked his path.",
+        "He gripped and he climbed up.",
+        "Then he clapped his claws with joy."
+      ]
+    },
+    {
+      "id": "y1_9",
+      "title": "The Christmas Elf",
+      "level": "Year 1",
+      "dateAdded": "2026-04-12",
+      "imagePrompt": "a cheerful little elf with a green hat wrapping presents in a cosy workshop, warm glowing lights, children's watercolour illustration",
+      "lines": [
+        "An elf had a chest of things.",
+        "She chose a gift for each child.",
+        "She put them in a big red sack.",
+        "Then she shut the chest with a click.",
+        "She checked the list of names.",
+        "Then the elf ran off with a cheer."
+      ]
+    },
+    {
+      "id": "y1_10",
+      "title": "Two Funny Frogs",
+      "level": "Year 1",
+      "dateAdded": "2026-04-11",
+      "imagePrompt": "two bright green frogs sitting on lily pads grinning at each other, soft watercolour pond scene, children's illustration, blue and green tones",
+      "lines": [
+        "Two frogs sat on a flat rock.",
+        "The first frog had a thin hat.",
+        "The next frog had a fat sack.",
+        "They swapped and had a big grin.",
+        "Then they jumped in the fresh pond.",
+        "The best of friends for ever."
+      ]
     }
   ],
   "year2": [
@@ -65,7 +289,7 @@
       "title": "The Mouse and the Cake",
       "level": "Year 2",
       "dateAdded": "2026-04-20",
-      "imagePrompt": "a tiny grey mouse looking at a big birthday cake with candles on a wooden table, children's book illustration, warm watercolour, cosy kitchen, whimsical",
+      "imagePrompt": "a tiny grey mouse looking at a big birthday cake with candles on a wooden table, children's book illustration, warm watercolour, cosy kitchen",
       "lines": [
         "A little mouse saw a big cake.",
         "The cake had pink icing on top.",
@@ -80,16 +304,144 @@
       "id": "y2_2",
       "title": "Jane's Bike Ride",
       "level": "Year 2",
-      "dateAdded": "2026-04-17",
-      "imagePrompt": "a cute rabbit riding a blue bicycle down a country lane, sunshine and green fields, children's book illustration, soft watercolour, happy and warm",
+      "dateAdded": "2026-04-19",
+      "imagePrompt": "a cute rabbit riding a blue bicycle down a country lane, sunshine and green fields, children's book illustration, soft watercolour",
       "lines": [
         "Jane the rabbit had a blue bike.",
         "She rode down the country lane.",
         "The sun was bright and warm today.",
-        "She saw a goat in the field.",
+        "She saw a goat in the green field.",
         "The goat waved and said hello.",
         "Jane rode home before the rain came.",
         "She left her bike by the green gate."
+      ]
+    },
+    {
+      "id": "y2_3",
+      "title": "Rain on the Boat",
+      "level": "Year 2",
+      "dateAdded": "2026-04-18",
+      "imagePrompt": "a cheerful duck in a yellow raincoat sitting in a little wooden boat in the rain, soft watercolour children's illustration, blue and yellow tones",
+      "lines": [
+        "Dale the duck had a little boat.",
+        "He liked to sail on rainy days.",
+        "The rain came down on the still lake.",
+        "He wore his yellow raincoat and boots.",
+        "A snail waved from the muddy shore.",
+        "Dale waved his wing and smiled.",
+        "The rain and the boat made him happy."
+      ]
+    },
+    {
+      "id": "y2_4",
+      "title": "The Brave Mole",
+      "level": "Year 2",
+      "dateAdded": "2026-04-17",
+      "imagePrompt": "a tiny mole in a striped cape digging through soft brown earth, warm glowing underground scene, children's watercolour illustration, cosy",
+      "lines": [
+        "Miles the mole wore a cape and a hat.",
+        "He dug deep into the soft dark soil.",
+        "He came out in a sunny green field.",
+        "The bees were humming around the blooms.",
+        "Miles waved to a little sleeping vole.",
+        "He ate a piece of sweet honeycake.",
+        "Then he rode home on a fat snail."
+      ]
+    },
+    {
+      "id": "y2_5",
+      "title": "The Kite in the Trees",
+      "level": "Year 2",
+      "dateAdded": "2026-04-16",
+      "imagePrompt": "a bright colourful kite tangled in branches of a tall tree, two animal friends looking up at it, soft watercolour children's illustration",
+      "lines": [
+        "Grace the goose flew her fine kite.",
+        "The kite was red with a long white tail.",
+        "A breeze blew it high into the sky.",
+        "Then the kite got stuck in a tall oak.",
+        "A wise owl came down to help her.",
+        "He freed the kite with his sharp beak.",
+        "Grace flew it home before the sun set."
+      ]
+    },
+    {
+      "id": "y2_6",
+      "title": "The Dream Boat",
+      "level": "Year 2",
+      "dateAdded": "2026-04-15",
+      "imagePrompt": "a small bear cub floating in a paper boat through a dreamy cloudy sky, stars and moon glowing, children's watercolour illustration, magical",
+      "lines": [
+        "At night the little bear had a dream.",
+        "He was floating in a paper boat.",
+        "The moon glowed like a golden coin.",
+        "He sailed past sleeping clouds and stars.",
+        "A wise blue whale swam below.",
+        "The whale sang a sweet slow song.",
+        "In the morning he smiled at the moon."
+      ]
+    },
+    {
+      "id": "y2_7",
+      "title": "The Sweet Street",
+      "level": "Year 2",
+      "dateAdded": "2026-04-14",
+      "imagePrompt": "a colourful candy-themed street with animal shopkeepers selling ice cream and cakes, watercolour children's illustration, warm and cheerful",
+      "lines": [
+        "On Sweet Street lived a kind old bee.",
+        "She had a little cake shop at the end.",
+        "Each day she baked a treat for all.",
+        "The goat liked the honey cream pie.",
+        "The sleek seal ate the glazed raisin roll.",
+        "The green toad had the oat and seed loaf.",
+        "Each week the street smelled very fine."
+      ]
+    },
+    {
+      "id": "y2_8",
+      "title": "Five Nice Mice",
+      "level": "Year 2",
+      "dateAdded": "2026-04-13",
+      "imagePrompt": "five little mice in colourful clothes dancing together in a cosy mouse hole with fairy lights, soft watercolour children's illustration",
+      "lines": [
+        "Five nice mice lived in a tall white house.",
+        "They liked to dance on the green tiles.",
+        "Mike was the best at the spinning slide.",
+        "Kate could leap up and dive like a fish.",
+        "At night they baked a huge pile of rice.",
+        "They ate and danced and slept with smiles.",
+        "The five mice were the best of mates."
+      ]
+    },
+    {
+      "id": "y2_9",
+      "title": "Luke and the Flute",
+      "level": "Year 2",
+      "dateAdded": "2026-04-12",
+      "imagePrompt": "a small blue bird playing a silver flute in a sunny woodland clearing with animals listening, children's watercolour illustration",
+      "lines": [
+        "Luke the blue bird had a silver flute.",
+        "He played a tune in the green wood.",
+        "The flowers opened when they heard the song.",
+        "A cute vole clapped her little paws.",
+        "A toad and his mate came to listen too.",
+        "Luke played all day until the moon rose.",
+        "Every tree and stone hummed his sweet tune."
+      ]
+    },
+    {
+      "id": "y2_10",
+      "title": "Rose Goes Home",
+      "level": "Year 2",
+      "dateAdded": "2026-04-11",
+      "imagePrompt": "a little hedgehog carrying a basket of roses walking through a golden autumn forest, warm watercolour children's illustration, cosy and magical",
+      "lines": [
+        "Rose the hedgehog left home at dawn.",
+        "She walked through the deep green pine wood.",
+        "She had a basket of red ripe roses.",
+        "The road was long and her feet were sore.",
+        "A kind mole gave her a ride in his boat.",
+        "They floated down the wide stream home.",
+        "Rose smiled and held her roses close."
       ]
     }
   ],
@@ -99,7 +451,7 @@
       "title": "The Curious Little Otter",
       "level": "Year 3",
       "dateAdded": "2026-04-20",
-      "imagePrompt": "a curious playful otter exploring a sparkling river with smooth pebbles and lily pads, children's book illustration, detailed watercolour, magical woodland scene, whimsical",
+      "imagePrompt": "a curious playful otter exploring a sparkling river with smooth pebbles and lily pads, children's watercolour, magical woodland scene",
       "lines": [
         "Oliver the otter lived beside a sparkling river.",
         "Every morning he would explore the smooth river stones.",
@@ -117,18 +469,170 @@
       "id": "y3_2",
       "title": "Bramble the Brave Badger",
       "level": "Year 3",
-      "dateAdded": "2026-04-16",
-      "imagePrompt": "a brave little badger wearing a small red scarf walking through an enchanted forest at twilight, fireflies glowing, children's book illustration, magical watercolour, whimsical and cosy",
+      "dateAdded": "2026-04-19",
+      "imagePrompt": "a brave little badger wearing a small red scarf walking through an enchanted forest at twilight, fireflies glowing, children's watercolour illustration",
       "lines": [
         "Bramble the badger was the smallest animal in the forest.",
         "The other creatures often teased him because of his tiny size.",
-        "One evening, a terrible storm shook the trees and scattered the birds.",
+        "One evening a terrible storm shook the trees and scattered the birds.",
         "A baby squirrel became trapped beneath a heavy fallen branch.",
         "Bramble was the only one brave enough to crawl underneath.",
         "He pushed with all his strength and freed the frightened squirrel.",
         "The animals of the forest cheered loudly for their tiny hero.",
-        "From that day on, nobody ever teased Bramble about his size.",
+        "From that day on nobody ever teased Bramble about his size.",
         "They learned that courage has nothing to do with being big."
+      ]
+    },
+    {
+      "id": "y3_3",
+      "title": "The Lighthouse Keeper's Cat",
+      "level": "Year 3",
+      "dateAdded": "2026-04-18",
+      "imagePrompt": "a striped tabby cat sitting in a lighthouse window on a stormy night, warm glowing light, dramatic crashing waves, children's watercolour illustration",
+      "lines": [
+        "High on the rocky cliffs stood a tall striped lighthouse.",
+        "Inside lived Cornelius the lighthouse keeper and his clever cat Pip.",
+        "Every night Pip would climb to the very top of the lighthouse.",
+        "She watched the dark ocean carefully for any ships in danger.",
+        "One stormy Tuesday the lighthouse lamp flickered and went out completely.",
+        "Pip raced down the spiral staircase and woke Cornelius immediately.",
+        "Together they replaced the broken bulb before any ship could crash.",
+        "The grateful sailors sent a beautiful painting of their ship as a gift.",
+        "Cornelius hung it proudly on the lighthouse wall for everyone to see.",
+        "And Pip purred loudly every time she walked past her favourite painting."
+      ]
+    },
+    {
+      "id": "y3_4",
+      "title": "The Inventor's Workshop",
+      "level": "Year 3",
+      "dateAdded": "2026-04-17",
+      "imagePrompt": "a clever fox in goggles and overalls surrounded by whimsical inventions and colourful gadgets in a busy workshop, children's watercolour illustration",
+      "lines": [
+        "Professor Fennec the fox had the most incredible workshop in the valley.",
+        "Every shelf was crowded with inventions, experiments, and unfinished contraptions.",
+        "His greatest challenge was building a machine that could translate animal languages.",
+        "He worked tirelessly through the night, surrounded by gears and glowing dials.",
+        "One morning the machine spluttered, hummed, and suddenly crackled to life.",
+        "He pointed it at a passing sparrow and heard her beautiful song translated.",
+        "She was singing about her favourite berry bush and the colour of the sky.",
+        "Professor Fennec laughed with delight and ran outside to speak with everyone.",
+        "The entire forest gathered to share their stories, worries, and wonderful dreams.",
+        "From that day on the valley was the most peaceful, joyful place imaginable."
+      ]
+    },
+    {
+      "id": "y3_5",
+      "title": "Stargazing with Stella",
+      "level": "Year 3",
+      "dateAdded": "2026-04-16",
+      "imagePrompt": "a little owl with a brass telescope looking at a brilliant star-filled night sky from a hilltop, magical glowing stars, children's watercolour illustration",
+      "lines": [
+        "Stella the owl had a magnificent brass telescope she had built herself.",
+        "Each cloudless night she would carry it to the top of Pinecone Hill.",
+        "She mapped every constellation and gave each one a wonderful new name.",
+        "Her favourite was the group of stars she called the Swimming Octopus.",
+        "One night she spotted something she had never seen in all her years.",
+        "A small bright object was crossing the sky in a perfectly straight line.",
+        "She recorded its position carefully in her battered leather notebook.",
+        "The next morning she sent a letter to the Royal Animal Observatory.",
+        "Three weeks later they wrote back confirming her extraordinary discovery.",
+        "Stella the owl had found a brand new comet, and they named it after her."
+      ]
+    },
+    {
+      "id": "y3_6",
+      "title": "The Dragon Who Loved Snow",
+      "level": "Year 3",
+      "dateAdded": "2026-04-15",
+      "imagePrompt": "a small purple dragon looking at a tiny snowflake with wonder, cosy cave home with cushions and books, children's watercolour illustration, magical",
+      "lines": [
+        "Ember was the most unusual dragon in the entire Silverstone Mountains.",
+        "While all the other dragons breathed roaring flames with great pride, Ember could not.",
+        "The truth was that Ember could breathe the most spectacular glittering snowflakes.",
+        "In the deepest summer heat, animals would travel for miles to cool down nearby.",
+        "Ember decorated the whole mountain with sparkling frost patterns every single morning.",
+        "When the visiting queen arrived during a heatwave, Ember saved the royal celebration.",
+        "Her snowflakes swirled around the guests like a magical shimmering blizzard of light.",
+        "The other dragons shook their heads in disbelief and then began to cheer.",
+        "Nobody thought Ember was unusual at all after that remarkable summer day.",
+        "She was simply the most extraordinary dragon the mountains had ever known."
+      ]
+    },
+    {
+      "id": "y3_7",
+      "title": "The Clockmaker's Apprentice",
+      "level": "Year 3",
+      "dateAdded": "2026-04-14",
+      "imagePrompt": "a young hedgehog apprentice working on a large ornate clock with tiny gears and tools, golden workshop light, children's watercolour illustration",
+      "lines": [
+        "Hazel the hedgehog was apprenticed to the great clockmaker Otto the beaver.",
+        "Every morning she polished the brass gears and carefully wound every single clock.",
+        "Otto taught her that patience was the most important tool in any workshop.",
+        "One afternoon a mysterious customer brought in a clock unlike anything they had seen.",
+        "Its face showed not the time but the weather, the tides, and the phases of the moon.",
+        "Hazel studied it for three whole weeks, sketching every part in her notebook.",
+        "She discovered a hidden compartment containing a tiny rolled-up musical scroll.",
+        "When the scroll was placed inside the clock, it played a beautiful ancient melody.",
+        "The mysterious customer returned, listened quietly, and wept with joyful tears.",
+        "It had belonged to his grandmother, and the song was her favourite lullaby."
+      ]
+    },
+    {
+      "id": "y3_8",
+      "title": "The Lost Map",
+      "level": "Year 3",
+      "dateAdded": "2026-04-13",
+      "imagePrompt": "two young animal adventurers holding a treasure map on a tropical island with palm trees and bright flowers, children's watercolour illustration",
+      "lines": [
+        "Captain Thistle the rabbit had sailed every ocean in her tiny striped vessel.",
+        "Her first mate, a philosophical tortoise named Gerard, kept the ship's log.",
+        "One foggy morning they discovered an old rolled map tucked inside a bottle.",
+        "The map showed a mysterious island shaped exactly like a slice of melon.",
+        "They followed the map for eleven days through storms and glassy-calm waters.",
+        "When they finally arrived the island was covered in enormous sweetly scented flowers.",
+        "Every flower contained a small note written by the explorer who came before them.",
+        "The notes described extraordinary creatures that could only be seen at midnight.",
+        "Captain Thistle and Gerard stayed for a whole month filling notebook after notebook.",
+        "They sailed home with stories so remarkable that nobody believed a single word."
+      ]
+    },
+    {
+      "id": "y3_9",
+      "title": "The Orchestra Underground",
+      "level": "Year 3",
+      "dateAdded": "2026-04-12",
+      "imagePrompt": "a magical underground cavern filled with glowing mushrooms and animal musicians playing instruments, children's watercolour illustration, magical and warm",
+      "lines": [
+        "Beneath the roots of the oldest tree in Fernwood lived an extraordinary orchestra.",
+        "The musicians were moles, voles, beetles, and one exceptionally gifted earthworm.",
+        "They played every night for the sleeping roots, who seemed to grow more beautifully because of it.",
+        "Their conductor was Maestro Deepburrow, a mole with silver spectacles and a long baton.",
+        "One spring evening a young fox cub named Rufus fell through a mossy trapdoor.",
+        "He landed softly in the front row just as the orchestra began their finest symphony.",
+        "Rufus sat perfectly still, barely breathing, not wanting the music to ever stop.",
+        "When it ended, Maestro Deepburrow invited him to join as the triangle player.",
+        "Rufus practised every night until his triangle rang out clear and perfectly in tune.",
+        "And the roots of the old tree grew taller and stronger than they ever had before."
+      ]
+    },
+    {
+      "id": "y3_10",
+      "title": "The Painter of Skies",
+      "level": "Year 3",
+      "dateAdded": "2026-04-11",
+      "imagePrompt": "a magical pelican with rainbow-tipped wings painting a spectacular sunset sky with a giant brush, children's watercolour illustration, breathtaking colours",
+      "lines": [
+        "High above the clouds lived a pelican whose wings were tipped with every colour imaginable.",
+        "Her name was Iris, and she had the most important job in the entire world.",
+        "Every morning before sunrise she would pick up her enormous feather brush.",
+        "She swept it carefully across the horizon to paint the colours of the dawn.",
+        "Every evening she mixed purples, golds, and crimsons for the magnificent sunset.",
+        "One winter morning she woke with a dreadful cold and could not paint at all.",
+        "The sky stayed a flat dull grey for the whole of that unhappy Tuesday.",
+        "Every animal looked up sadly, knowing something wonderful was missing from their day.",
+        "Her friend, a determined starling named Cleo, painted in her place that evening.",
+        "Iris looked down at the crooked wobbling colours and laughed until she felt much better."
       ]
     }
   ]
